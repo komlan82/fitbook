@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="1130" viewBox="0 0 1100 1130">
+<title>FitBook - Diagramme de use-cases</title>
+<defs><marker id="open" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9" fill="none" stroke="#1a1a1a" stroke-width="1.3"/></marker></defs>
+<rect width="1100" height="1130" fill="#fff"/>
+<rect id="systeme" x="250" y="10" width="830" height="1100" fill="#fff" stroke="#1a1a1a" stroke-width="1.2"/>
+<text x="270"  font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="normal" font-style="normal" text-anchor="start" fill="#1a1a1a"><tspan x="270" y="45">Fitbook</tspan></text>
+<g id="uc-inscrire"><ellipse cx="470" cy="130" rx="150" ry="34" fill="#fff" stroke="#1a1a1a" stroke-width="1.2"/><text x="470"  font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="normal" font-style="normal" text-anchor="middle" fill="#1a1a1a"><tspan x="470" y="130">S&#x27;inscrire</tspan></text></g>
+<g id="uc-confirmer"><ellipse cx="880" cy="130" rx="125" ry="34" fill="#fff" stroke="#1a1a1a" stroke-width="1.2"/><text x="880"  font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="normal" font-style="normal" text-anchor="middle" fill="#1a1a1a"><tspan x="880" y="130">Confirmer l&#x27;adresse email</tspan></text></g>
+<g id="uc-auth"><ellipse cx="470" cy="235" rx="150" ry="34" fill="#fff" stroke="#1a1a1a" stroke-width="1.2"/><text x="470"  font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="normal" font-style="normal" text-anchor="middle" fill="#1a1a1a"><tspan x="470" y="235">S&#x27;authentifier</tspan></text></g>
+<g id="uc-rechercher"><ellipse cx="470" cy="330" rx="150" ry="34" fill="#fff" stroke="#1a1a1a" stroke-width="1.2"/><text x="470"  font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="normal" font-style="normal" text-anchor="middle" fill="#1a1a1a"><tspan x="470" y="322">Rechercher une salle,</tspan><tspan x="470" y="338">un cours ou un coach</tspan></text></g>
+<g id="uc-filtres"><ellipse cx="880" cy="330" rx="125" ry="34" fill="#fff" stroke="#1a1a1a" stroke-width="1.2"/><text x="880"  font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="normal" font-style="normal" text-anchor="middle" fill="#1a1a1a"><tspan x="880" y="330">Appliquer des filtres avancés</tspan></text></g>
+<g id="uc-fiche"><ellipse cx="470" cy="430" rx="150" ry="34" fill="#fff" stroke="#1a1a1a" stroke-width="1.2"/><text x="470"  font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="normal" font-style="normal" text-anchor="middle" fill="#1a1a1a"><tspan x="470" y="422">Consulter une fiche</tspan><tspan x="470" y="438">(salle, cours, coach)</tspan></text></g>
+<g id="uc-favoris"><ellipse cx="880" cy="430" rx="125" ry="34" fill="#fff" stroke="#1a1a1a" stroke-width="1.2"/><text x="880"  font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="normal" font-style="normal" text-anchor="middle" fill="#1a1a1a"><tspan x="880" y="430">Ajouter aux favoris</tspan></text></g>
+<g id="uc-reserver"><ellipse cx="470" cy="535" rx="150" ry="34" fill="#fff" stroke="#1a1a1a" stroke-width="1.2"/><text x="470"  font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="normal" font-style="normal" text-anchor="middle" fill="#1a1a1a"><tspan x="470" y="527">Réserver une séance</tspan><tspan x="470" y="543">ou un cours</tspan></text></g>
+<g id="uc-verifier"><ellipse cx="880" cy="535" rx="125" ry="34" fill="#fff" stroke="#1a1a1a" stroke-width="1.2"/><text x="880"  font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="normal" font-style="normal" text-anchor="middle" fill="#1a1a1a"><tspan x="880" y="535">Vérifier les disponibilités</tspan></text></g>
+<g id="uc-mesres"><ellipse cx="470" cy="630" rx="150" ry="34" fill="#fff" stroke="#1a1a1a" stroke-width="1.2"/><text x="470"  font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="normal" font-style="normal" text-anchor="middle" fill="#1a1a1a"><tspan x="470" y="630">Gérer mes réservations</tspan></text></g>
+<g id="uc-avis"><ellipse cx="880" cy="630" rx="125" ry="34" fill="#fff" stroke="#1a1a1a" stroke-width="1.2"/><text x="880"  font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="normal" font-style="normal" text-anchor="middle" fill="#1a1a1a"><tspan x="880" y="622">Publier un avis</tspan><tspan x="880" y="638">et une note</tspan></text></g>
+<g id="uc-seances"><ellipse cx="470" cy="730" rx="150" ry="34" fill="#fff" stroke="#1a1a1a" stroke-width="1.2"/><text x="470"  font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="normal" font-style="normal" text-anchor="middle" fill="#1a1a1a"><tspan x="470" y="722">Gérer les séances</tspan><tspan x="470" y="738">et disponibilités</tspan></text></g>
+<g id="uc-calendrier"><ellipse cx="470" cy="815" rx="150" ry="34" fill="#fff" stroke="#1a1a1a" stroke-width="1.2"/><text x="470"  font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="normal" font-style="normal" text-anchor="middle" fill="#1a1a1a"><tspan x="470" y="815">Consulter le calendrier</tspan></text></g>
+<g id="uc-salle"><ellipse cx="470" cy="900" rx="150" ry="34" fill="#fff" stroke="#1a1a1a" stroke-width="1.2"/><text x="470"  font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="normal" font-style="normal" text-anchor="middle" fill="#1a1a1a"><tspan x="470" y="892">Gérer ma salle et</tspan><tspan x="470" y="908">suivre mes réservations</tspan></text></g>
+<g id="uc-moderer"><ellipse cx="470" cy="990" rx="150" ry="34" fill="#fff" stroke="#1a1a1a" stroke-width="1.2"/><text x="470"  font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="normal" font-style="normal" text-anchor="middle" fill="#1a1a1a"><tspan x="470" y="982">Valider et modérer</tspan><tspan x="470" y="998">les contenus</tspan></text></g>
+<g id="uc-users"><ellipse cx="470" cy="1075" rx="150" ry="34" fill="#fff" stroke="#1a1a1a" stroke-width="1.2"/><text x="470"  font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="normal" font-style="normal" text-anchor="middle" fill="#1a1a1a"><tspan x="470" y="1075">Gérer les utilisateurs</tspan></text></g>
+<line x1="620" y1="130" x2="755" y2="130" stroke="#1a1a1a" stroke-width="1.1" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<text x="687"  font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" font-style="italic" text-anchor="middle" fill="#1a1a1a"><tspan x="687" y="116">«include»</tspan></text>
+<line x1="755" y1="330" x2="620" y2="330" stroke="#1a1a1a" stroke-width="1.1" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<text x="687"  font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" font-style="italic" text-anchor="middle" fill="#1a1a1a"><tspan x="687" y="316">«extend»</tspan></text>
+<line x1="755" y1="430" x2="620" y2="430" stroke="#1a1a1a" stroke-width="1.1" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<text x="687"  font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" font-style="italic" text-anchor="middle" fill="#1a1a1a"><tspan x="687" y="416">«extend»</tspan></text>
+<line x1="620" y1="535" x2="755" y2="535" stroke="#1a1a1a" stroke-width="1.1" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<text x="687"  font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" font-style="italic" text-anchor="middle" fill="#1a1a1a"><tspan x="687" y="521">«include»</tspan></text>
+<line x1="755" y1="630" x2="620" y2="630" stroke="#1a1a1a" stroke-width="1.1" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<text x="687"  font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" font-style="italic" text-anchor="middle" fill="#1a1a1a"><tspan x="687" y="616">«extend»</tspan></text>
+<g id="actor-utilisateur"><circle cx="150" cy="257" r="9" fill="#fff" stroke="#1a1a1a" stroke-width="1.5"/>
+<line x1="150" y1="266" x2="150" y2="295" stroke="#1a1a1a" stroke-width="1.5"/>
+<line x1="134" y1="275" x2="166" y2="275" stroke="#1a1a1a" stroke-width="1.5"/>
+<line x1="150" y1="295" x2="136" y2="317" stroke="#1a1a1a" stroke-width="1.5"/>
+<line x1="150" y1="295" x2="164" y2="317" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="150"  font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="normal" font-style="normal" text-anchor="middle" fill="#1a1a1a"><tspan x="150" y="329">Utilisateur</tspan><tspan x="150" y="345">Visiteur</tspan></text></g>
+<g id="actor-sportif"><circle cx="150" cy="557" r="9" fill="#fff" stroke="#1a1a1a" stroke-width="1.5"/>
+<line x1="150" y1="566" x2="150" y2="595" stroke="#1a1a1a" stroke-width="1.5"/>
+<line x1="134" y1="575" x2="166" y2="575" stroke="#1a1a1a" stroke-width="1.5"/>
+<line x1="150" y1="595" x2="136" y2="617" stroke="#1a1a1a" stroke-width="1.5"/>
+<line x1="150" y1="595" x2="164" y2="617" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="150"  font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="normal" font-style="normal" text-anchor="middle" fill="#1a1a1a"><tspan x="150" y="637">Sportif</tspan></text></g>
+<g id="actor-coach"><circle cx="150" cy="717" r="9" fill="#fff" stroke="#1a1a1a" stroke-width="1.5"/>
+<line x1="150" y1="726" x2="150" y2="755" stroke="#1a1a1a" stroke-width="1.5"/>
+<line x1="134" y1="735" x2="166" y2="735" stroke="#1a1a1a" stroke-width="1.5"/>
+<line x1="150" y1="755" x2="136" y2="777" stroke="#1a1a1a" stroke-width="1.5"/>
+<line x1="150" y1="755" x2="164" y2="777" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="150"  font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="normal" font-style="normal" text-anchor="middle" fill="#1a1a1a"><tspan x="150" y="797">Coach</tspan></text></g>
+<g id="actor-gestionnaire"><circle cx="150" cy="872" r="9" fill="#fff" stroke="#1a1a1a" stroke-width="1.5"/>
+<line x1="150" y1="881" x2="150" y2="910" stroke="#1a1a1a" stroke-width="1.5"/>
+<line x1="134" y1="890" x2="166" y2="890" stroke="#1a1a1a" stroke-width="1.5"/>
+<line x1="150" y1="910" x2="136" y2="932" stroke="#1a1a1a" stroke-width="1.5"/>
+<line x1="150" y1="910" x2="164" y2="932" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="150"  font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="normal" font-style="normal" text-anchor="middle" fill="#1a1a1a"><tspan x="150" y="944">Gestionnaire</tspan><tspan x="150" y="960">de salle</tspan></text></g>
+<g id="actor-administrateur"><circle cx="150" cy="1002" r="9" fill="#fff" stroke="#1a1a1a" stroke-width="1.5"/>
+<line x1="150" y1="1011" x2="150" y2="1040" stroke="#1a1a1a" stroke-width="1.5"/>
+<line x1="134" y1="1020" x2="166" y2="1020" stroke="#1a1a1a" stroke-width="1.5"/>
+<line x1="150" y1="1040" x2="136" y2="1062" stroke="#1a1a1a" stroke-width="1.5"/>
+<line x1="150" y1="1040" x2="164" y2="1062" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="150"  font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="normal" font-style="normal" text-anchor="middle" fill="#1a1a1a"><tspan x="150" y="1082">Administrateur</tspan></text></g>
+<line x1="168" y1="277" x2="320" y2="130" stroke="#1a1a1a" stroke-width="1.2"/>
+<line x1="168" y1="277" x2="320" y2="235" stroke="#1a1a1a" stroke-width="1.2"/>
+<line x1="168" y1="277" x2="320" y2="330" stroke="#1a1a1a" stroke-width="1.2"/>
+<line x1="168" y1="277" x2="320" y2="430" stroke="#1a1a1a" stroke-width="1.2"/>
+<line x1="168" y1="577" x2="320" y2="535" stroke="#1a1a1a" stroke-width="1.2"/>
+<line x1="168" y1="577" x2="320" y2="630" stroke="#1a1a1a" stroke-width="1.2"/>
+<line x1="168" y1="737" x2="320" y2="730" stroke="#1a1a1a" stroke-width="1.2"/>
+<line x1="168" y1="737" x2="320" y2="815" stroke="#1a1a1a" stroke-width="1.2"/>
+<line x1="168" y1="892" x2="320" y2="815" stroke="#1a1a1a" stroke-width="1.2"/>
+<line x1="168" y1="892" x2="320" y2="900" stroke="#1a1a1a" stroke-width="1.2"/>
+<line x1="168" y1="1022" x2="320" y2="990" stroke="#1a1a1a" stroke-width="1.2"/>
+<line x1="168" y1="1022" x2="320" y2="1075" stroke="#1a1a1a" stroke-width="1.2"/>
+<g id="heritage"><line x1="45" y1="275" x2="45" y2="1020" stroke="#1a1a1a" stroke-width="1.2"/>
+<line x1="45" y1="275" x2="110" y2="275" stroke="#1a1a1a" stroke-width="1.2"/>
+<polygon points="110,265 110,285 130,275" fill="#fff" stroke="#1a1a1a" stroke-width="1.2"/>
+<line x1="45" y1="575" x2="132" y2="575" stroke="#1a1a1a" stroke-width="1.2"/>
+<line x1="45" y1="735" x2="132" y2="735" stroke="#1a1a1a" stroke-width="1.2"/>
+<line x1="45" y1="890" x2="132" y2="890" stroke="#1a1a1a" stroke-width="1.2"/>
+<line x1="45" y1="1020" x2="132" y2="1020" stroke="#1a1a1a" stroke-width="1.2"/>
+</g>
+</svg>
