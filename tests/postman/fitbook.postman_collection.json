@@ -1,0 +1,2319 @@
+{
+ "info": {
+  "name": "FitBook - Tests API",
+  "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+ },
+ "item": [
+  {
+   "name": "00 - Santé",
+   "item": [
+    {
+     "name": "API et base disponibles",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/health",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "health"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         "pm.test('api=ok et base=ok', () => { const j=pm.response.json(); pm.expect(j.api).to.eql('ok'); pm.expect(j.base).to.eql('ok'); });"
+        ]
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "01 - Recherche publique",
+   "item": [
+    {
+     "name": "Liste des salles validées",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/salles",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "salles"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         "const s=pm.response.json();",
+         "pm.test('3 salles validées (Iron Club masquée)', () => pm.expect(s.length).to.eql(3));",
+         "pm.test('Iron Club absente', () => pm.expect(s.map(x=>x.nom)).to.not.include('Iron Club'));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Filtre par ville",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/salles?ville=Ixelles",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "salles"
+       ],
+       "query": [
+        {
+         "key": "ville",
+         "value": "Ixelles"
+        }
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         "const s=pm.response.json();",
+         "pm.test('Une seule salle : Studio Zen', () => { pm.expect(s.length).to.eql(1); pm.expect(s[0].nom).to.eql('Studio Zen'); });"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Filtre par discipline",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/salles?discipline=Boxe",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "salles"
+       ],
+       "query": [
+        {
+         "key": "discipline",
+         "value": "Boxe"
+        }
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         "pm.test('Ring & Gloves trouvée', () => pm.expect(pm.response.json().map(x=>x.nom)).to.include('Ring & Gloves'));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Fiche salle avec séances et avis",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/salles/1",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "salles",
+        "1"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         "const j=pm.response.json();",
+         "pm.test('Séances et avis présents', () => { pm.expect(j.seances.length).to.be.above(0); pm.expect(j.avis.length).to.be.above(0); });",
+         "pm.test('Places restantes calculées', () => pm.expect(j.seances[0]).to.have.property('placesRestantes'));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Salle en attente invisible (Iron Club)",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/salles/4",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "salles",
+        "4"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 404', () => pm.response.to.have.status(404));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Salle inexistante",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/salles/9999",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "salles",
+        "9999"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 404', () => pm.response.to.have.status(404));"
+        ]
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "02 - Sécurité : attaques",
+   "item": [
+    {
+     "name": "Injection SQL dans le filtre ville",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/salles?ville=' OR '1'='1",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "salles"
+       ],
+       "query": [
+        {
+         "key": "ville",
+         "value": "' OR '1'='1"
+        }
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         "pm.test('Aucune salle renvoyée (requête préparée)', () => pm.expect(pm.response.json().length).to.eql(0));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Injection SQL : DROP dans discipline",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/salles?discipline=Yoga'; DROP TABLE avis;--",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "salles"
+       ],
+       "query": [
+        {
+         "key": "discipline",
+         "value": "Yoga'; DROP TABLE avis;--"
+        }
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         "pm.test('Aucune salle et table intacte', () => pm.expect(pm.response.json().length).to.eql(0));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "XSS dans le nom à l'inscription",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/register",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "register"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"nom\": \"<script>alert(1)</script>\", \"prenom\": \"Test\", \"email\": \"xss@fitbook.test\", \"password\": \"MotDePasse2026\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 422', () => pm.response.to.have.status(422));",
+         "pm.test('Erreur sur le champ nom', () => pm.expect(pm.response.json().details).to.have.property('nom'));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Mot de passe trop faible refusé",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/register",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "register"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"nom\": \"Test\", \"prenom\": \"Faible\", \"email\": \"faible@fitbook.test\", \"password\": \"court\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 422', () => pm.response.to.have.status(422));",
+         "pm.test('Erreur sur le mot de passe', () => pm.expect(pm.response.json().details).to.have.property('password'));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Email invalide refusé",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/register",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "register"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"nom\": \"Test\", \"prenom\": \"Mail\", \"email\": \"pas-un-email\", \"password\": \"MotDePasse2026\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 422', () => pm.response.to.have.status(422));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Accès sans connexion refusé (/api/me)",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/me",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "me"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 401', () => pm.response.to.have.status(401));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Accès sans connexion refusé (réservations)",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/reservations",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "reservations"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 401', () => pm.response.to.have.status(401));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Connexion avec un mauvais mot de passe",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/login",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "login"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"email\": \"inconnu@fitbook.test\", \"password\": \"FauxMotDePasse1\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 401', () => pm.response.to.have.status(401));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Corps JSON absent à la connexion",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/login",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "login"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Refusé (4xx)', () => pm.expect(pm.response.code).to.be.within(400,401));"
+        ]
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "03 - Inscription et confirmation email",
+   "item": [
+    {
+     "name": "Inscription valide",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/register",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "register"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"nom\": \"Testeur\", \"prenom\": \"Auto\", \"email\": \"{{emailTest}}\", \"password\": \"MotDePasse2026\", \"role\": \"admin\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "prerequest",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.collectionVariables.set('emailTest', 'testeur' + Date.now() + '@fitbook.test');"
+        ]
+       }
+      },
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 201', () => pm.response.to.have.status(201));",
+         "const j=pm.response.json();",
+         "pm.test('Lien de confirmation fourni (dev)', () => pm.expect(j.lienConfirmationDev).to.be.a('string'));",
+         "pm.collectionVariables.set('lienConfirmation', j.lienConfirmationDev);"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Inscription avec email déjà utilisé",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/register",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "register"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"nom\": \"Testeur\", \"prenom\": \"Auto\", \"email\": \"{{emailTest}}\", \"password\": \"MotDePasse2026\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 409', () => pm.response.to.have.status(409));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Connexion refusée avant confirmation",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/login",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "login"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"email\": \"{{emailTest}}\", \"password\": \"MotDePasse2026\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 401', () => pm.response.to.have.status(401));",
+         "pm.test('Message de confirmation', () => pm.expect(JSON.stringify(pm.response.json())).to.include('confirmer'));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Confirmation par lien signé",
+     "request": {
+      "method": "GET",
+      "header": [],
+      "url": "{{lienConfirmation}}"
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Redirection après confirmation', () => pm.expect(pm.response.code).to.be.oneOf([301,302,303]));"
+        ]
+       }
+      }
+     ],
+     "protocolProfileBehavior": {
+      "followRedirects": false
+     }
+    },
+    {
+     "name": "Lien falsifié refusé",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/confirm/1?_hash=falsifie&_expiration=9999999999",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "confirm",
+        "1"
+       ],
+       "query": [
+        {
+         "key": "_hash",
+         "value": "falsifie"
+        },
+        {
+         "key": "_expiration",
+         "value": "9999999999"
+        }
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 400', () => pm.response.to.have.status(400));"
+        ]
+       }
+      }
+     ],
+     "protocolProfileBehavior": {
+      "followRedirects": false
+     }
+    },
+    {
+     "name": "Connexion {{emailTest}} -> 200",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/login",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "login"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"email\": \"{{emailTest}}\", \"password\": \"MotDePasse2026\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         "pm.test('Rôle forcé à sportif (pas de promotion admin)', () => pm.expect(pm.response.json().role).to.eql('sportif'));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Profil connecté",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/me",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "me"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Modification du profil",
+     "request": {
+      "method": "PUT",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/me",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "me"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"nom\": \"Testeur\", \"prenom\": \"Modifie\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         "pm.test('Prénom mis à jour', () => pm.expect(pm.response.json().prenom).to.eql('Modifie'));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Un sportif ne voit pas l'admin",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/admin/utilisateurs",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "admin",
+        "utilisateurs"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 403', () => pm.response.to.have.status(403));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Déconnexion",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/logout",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "logout"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));"
+        ]
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "04 - Réservations (sportif)",
+   "item": [
+    {
+     "name": "Connexion lea@fitbook.test -> 200",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/login",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "login"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"email\": \"lea@fitbook.test\", \"password\": \"Fitbook2026!\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         ""
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Réserver une séance disponible",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/reservations",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "reservations"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"idSeance\": 2}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 201', () => pm.response.to.have.status(201));",
+         "pm.test('Code OK', () => pm.expect(pm.response.json().code).to.eql('OK'));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Double réservation refusée",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/reservations",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "reservations"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"idSeance\": 2}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 409', () => pm.response.to.have.status(409));",
+         "pm.test('Code DEJA_RESERVEE', () => pm.expect(pm.response.json().code).to.eql('DEJA_RESERVEE'));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Séance complète refusée (capacité)",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/reservations",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "reservations"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"idSeance\": 3}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 409', () => pm.response.to.have.status(409));",
+         "pm.test('Code COMPLETE', () => pm.expect(pm.response.json().code).to.eql('COMPLETE'));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Séance inexistante",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/reservations",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "reservations"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"idSeance\": 9999}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 404', () => pm.response.to.have.status(404));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "idSeance invalide",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/reservations",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "reservations"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"idSeance\": \"abc\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 422', () => pm.response.to.have.status(422));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Mes réservations",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/reservations",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "reservations"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         "pm.test('La séance 2 est confirmée', () => { const r=pm.response.json().find(x=>x.idSeance==2); pm.expect(r.statut).to.eql('confirmee'); });"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Annuler la réservation",
+     "request": {
+      "method": "DELETE",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/reservations/2",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "reservations",
+        "2"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         "pm.test('Code OK', () => pm.expect(pm.response.json().code).to.eql('OK'));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Annuler une 2e fois : introuvable",
+     "request": {
+      "method": "DELETE",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/reservations/2",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "reservations",
+        "2"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 404', () => pm.response.to.have.status(404));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Déconnexion",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/logout",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "logout"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));"
+        ]
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "05 - Avis, favoris, contact",
+   "item": [
+    {
+     "name": "Connexion lea@fitbook.test -> 200",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/login",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "login"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"email\": \"lea@fitbook.test\", \"password\": \"Fitbook2026!\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         ""
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Avis refusé : séance non suivie",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/avis",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "avis"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"idSalle\": 3, \"note\": 5, \"commentaire\": \"Super\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 403', () => pm.response.to.have.status(403));",
+         "pm.test('Code SEANCE_NON_SUIVIE', () => pm.expect(pm.response.json().code).to.eql('SEANCE_NON_SUIVIE'));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Avis refusé : salle ET coach",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/avis",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "avis"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"idSalle\": 1, \"idCoach\": 1, \"note\": 5}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 422', () => pm.response.to.have.status(422));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Avis refusé : note hors limites",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/avis",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "avis"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"idSalle\": 1, \"note\": 9}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 422', () => pm.response.to.have.status(422));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Ajouter une salle aux favoris",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/favoris/salles/3",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "favoris",
+        "salles",
+        "3"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 201', () => pm.response.to.have.status(201));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Liste des favoris",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/favoris/salles",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "favoris",
+        "salles"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         "pm.test('Souffle & Corps en favori', () => pm.expect(pm.response.json().map(x=>x.id)).to.include(3));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Retirer des favoris",
+     "request": {
+      "method": "DELETE",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/favoris/salles/3",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "favoris",
+        "salles",
+        "3"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Déconnexion",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/logout",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "logout"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Contact valide (schéma JSON)",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/contact",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "contact"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"nom\": \"Alice\", \"email\": \"alice@exemple.be\", \"message\": \"Bonjour, je souhaite des informations.\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 201', () => pm.response.to.have.status(201));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Contact invalide : refusé par le JSON schema MySQL",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/contact",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "contact"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"nom\": \"A\", \"email\": \"pas-un-email\", \"message\": \"court\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 422', () => pm.response.to.have.status(422));"
+        ]
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "06 - Droits par rôle",
+   "item": [
+    {
+     "name": "Connexion admin@fitbook.test -> 200",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/login",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "login"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"email\": \"admin@fitbook.test\", \"password\": \"Fitbook2026!\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         ""
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Admin : liste des utilisateurs",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/admin/utilisateurs",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "admin",
+        "utilisateurs"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         "pm.test('Aucun mot de passe exposé', () => pm.expect(pm.response.text()).to.not.include('mot_de_passe').and.not.include('$2y$'));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Admin : ne peut pas réserver",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/reservations",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "reservations"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"idSeance\": 2}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 403', () => pm.response.to.have.status(403));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Admin : statut de validation invalide",
+     "request": {
+      "method": "PATCH",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/admin/salles/4/validation",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "admin",
+        "salles",
+        "4",
+        "validation"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"statut\": \"nimportequoi\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 422', () => pm.response.to.have.status(422));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Déconnexion",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/logout",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "logout"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Connexion gestionnaire@fitbook.test -> 200",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/login",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "login"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"email\": \"gestionnaire@fitbook.test\", \"password\": \"Fitbook2026!\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         ""
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Gestionnaire : ses salles",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/gestionnaire/salles",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "gestionnaire",
+        "salles"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         "pm.test('4 salles', () => pm.expect(pm.response.json().length).to.eql(4));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Gestionnaire : interdit côté admin",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/admin/utilisateurs",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "admin",
+        "utilisateurs"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 403', () => pm.response.to.have.status(403));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Déconnexion",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/logout",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "logout"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));"
+        ]
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "07 - Sauvegardes",
+   "item": [
+    {
+     "name": "Journal des sauvegardes et message visible",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/sauvegardes",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "sauvegardes"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         "const j=pm.response.json();",
+         "pm.test('Au moins une sauvegarde', () => pm.expect(j.total).to.be.above(0));",
+         "pm.test('Message lisible', () => pm.expect(j.message).to.include('Sauvegarde n'));"
+        ]
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "variable": [
+  {
+   "key": "baseUrl",
+   "value": "http://127.0.0.1:8000"
+  },
+  {
+   "key": "emailTest",
+   "value": ""
+  },
+  {
+   "key": "lienConfirmation",
+   "value": ""
+  }
+ ]
+}
