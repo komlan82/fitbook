@@ -10,6 +10,7 @@ Projet UAA MI08 · Rapport établi le 2 novembre 2026 · Environnement : Windows
 | Tests unitaires front-end | Vitest (Angular) | 3 tests | 3 réussis, 0 échec |
 | Tests d'API et d'intégration (HTTP + base MySQL réelle) | Postman / Newman | 56 requêtes, 82 assertions | 82 réussies, 0 échec |
 | Contrôle des permissions par rôle | Newman | groupes 03 et 06 | conformes |
+| Courbes de stress | script Node (`stress.mjs`) | 5 paliers × 2 routes | 0 erreur sur 493 requêtes, voir §5 |
 | Catalogue d'attaques | OWASP Top 10 + attaques courantes | 15 attaques répertoriées + 2 limites notées | 10 testées automatiquement, 4 mitigées par conception, 1 non couverte (HTTPS), voir §4 |
 
 Preuves : `tests/rapport/rapport-newman.html` (rapport complet), captures de la console Newman et PHPUnit.
@@ -81,7 +82,7 @@ Le jeu de tests est rejouable : deux passages successifs ont donné le même ré
 | 10 | Fuite de données sensibles (A02) | aucune colonne de mot de passe dans les réponses ; sérialisation sans hash | test « Aucun mot de passe exposé » | **testée** |
 | 11 | Force brute sur la connexion (A07) | `login_throttling` : 5 essais par 15 minutes | configuré, non démontré par un test automatique | mitigée |
 | 12 | CSRF (A01) | cookie de session `SameSite=Lax` (valeur par défaut de Symfony, à confirmer dans les outils du navigateur) ; API JSON uniquement | non testé automatiquement | mitigée |
-| 13 | Surcharge de la base / double réservation (A04) | transaction + verrou de ligne dans la procédure stockée | groupe 04 (capacité) ; test de charge non réalisé | mitigée |
+| 13 | Surcharge de la base / double réservation (A04) | transaction + verrou de ligne dans la procédure stockée | groupe 04 (capacité) ; test de charge §5 (0 erreur) | mitigée |
 | 14 | Clickjacking / sniffing (A05) | `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy` | implémentation en code, non testée automatiquement | mitigée |
 | 15 | Écoute du réseau (A02) | HTTPS | **non couverte** : application testée en HTTP local, déploiement distant non réalisé | non couverte |
 | – | Énumération des comptes (A07) | l'inscription indique « e-mail déjà utilisé » | limite connue, acceptée pour ce projet | non couverte |
@@ -89,9 +90,27 @@ Le jeu de tests est rejouable : deux passages successifs ont donné le même ré
 
 Bilan : 15 attaques répertoriées, dont 10 vérifiées par un test automatique, 4 mitigées par conception sans test dédié, 1 non couverte (HTTPS).
 
-## 5. Limites et suite
+## 5. Courbes de stress (test de charge)
 
-- Courbes de stress (charge) : non réalisées. À faire avec k6 ou JMeter sur `/api/salles` et `/api/reservations`.
+Outil : script `tests/stress/stress.mjs` (Node, `fetch` simultanés). Environnement : serveur PHP intégré (`php -S`, un seul processus), Symfony en mode développement, MySQL 8.4 local. Paliers de 1, 5, 10, 20 et 50 utilisateurs simultanés, 8 secondes par palier. Résultats bruts : `tests/stress/resultats.csv` et `resultats.json`. Courbes : `tests/stress/courbes-stress.png`.
+
+| Utilisateurs | Liste des salles : moyenne / 95e centile | Fiche d'une salle : moyenne / 95e centile | Débit |
+|---|---|---|---|
+| 1 | 253 ms / 306 ms | 249 ms / 299 ms | 4,0 req/s |
+| 5 | 1 156 ms / 1 320 ms | 1 170 ms / 1 302 ms | 4,0 à 4,1 req/s |
+| 10 | 2 185 ms / 2 505 ms | 2 210 ms / 2 527 ms | 4,0 à 4,1 req/s |
+| 20 | 3 989 ms / 4 902 ms | 3 952 ms / 4 900 ms | 4,1 req/s |
+| 50 | 8 446 ms / 12 028 ms | 8 477 ms / 12 173 ms | 4,1 à 4,2 req/s |
+
+Lecture des résultats :
+- Aucune erreur sur 493 requêtes : l'application tient la charge, elle devient seulement plus lente.
+- Le débit plafonne à environ 4 requêtes par seconde dès le premier utilisateur : le serveur intégré de PHP traite une requête à la fois (environ 250 ms par requête en mode développement).
+- Le temps de réponse augmente donc de façon linéaire avec le nombre d'utilisateurs, car les requêtes font la queue.
+- Limite : ces mesures ne représentent pas la production. Avec plusieurs processus (PHP-FPM), le cache d'opcodes et Symfony en mode production, le débit serait nettement supérieur. Cette mesure n'a pas été réalisée.
+
+## 6. Limites et suite
+
+- Courbes de stress mesurées uniquement sur le serveur de développement ; à refaire sur un serveur de production.
 - Déploiement distant sécurisé (HTTPS, base distante) : non réalisé.
 - Les données de test (comptes `@fitbook.test`) ne doivent jamais être utilisées en production.
-- Les tests de charge, de force brute et de CSRF sont les prochaines vérifications à automatiser.
+- Les tests de force brute et de CSRF sont les prochaines vérifications à automatiser.
