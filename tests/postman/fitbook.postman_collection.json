@@ -2300,6 +2300,1123 @@
      ]
     }
    ]
+  },
+  {
+   "name": "08 - Calendrier et espace coach",
+   "item": [
+    {
+     "name": "Calendrier public : séances de la période",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/calendrier?debut=2026-11-02&fin=2026-11-16",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "calendrier"
+       ],
+       "query": [
+        {
+         "key": "debut",
+         "value": "2026-11-02"
+        },
+        {
+         "key": "fin",
+         "value": "2026-11-16"
+        }
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         "const l=pm.response.json();",
+         "pm.test('Des séances sont listées', () => pm.expect(l.length).to.be.above(0));",
+         "pm.test('Places restantes et salle présentes', () => { pm.expect(l[0]).to.have.property('placesRestantes'); pm.expect(l[0]).to.have.property('salle'); });"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Calendrier : période inversée refusée",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/calendrier?debut=2026-11-16&fin=2026-11-02",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "calendrier"
+       ],
+       "query": [
+        {
+         "key": "debut",
+         "value": "2026-11-16"
+        },
+        {
+         "key": "fin",
+         "value": "2026-11-02"
+        }
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 422', () => pm.response.to.have.status(422));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Calendrier : date invalide refusée",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/calendrier?debut=abc&fin=def",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "calendrier"
+       ],
+       "query": [
+        {
+         "key": "debut",
+         "value": "abc"
+        },
+        {
+         "key": "fin",
+         "value": "def"
+        }
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 422', () => pm.response.to.have.status(422));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Espace coach sans connexion refusé",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/coach/seances",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "coach",
+        "seances"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 401', () => pm.response.to.have.status(401));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Connexion lea@fitbook.test -> 200",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/login",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "login"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"email\": \"lea@fitbook.test\", \"password\": \"Fitbook2026!\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         ""
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Sportif : espace coach interdit",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/coach/seances",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "coach",
+        "seances"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 403', () => pm.response.to.have.status(403));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Déconnexion",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/logout",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "logout"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Connexion gestionnaire@fitbook.test -> 200",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/login",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "login"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"email\": \"gestionnaire@fitbook.test\", \"password\": \"Fitbook2026!\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         ""
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Gestionnaire : espace coach interdit",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/coach/seances",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "coach",
+        "seances"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 403', () => pm.response.to.have.status(403));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Déconnexion",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/logout",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "logout"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Connexion camille@fitbook.test -> 200",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/login",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "login"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"email\": \"camille@fitbook.test\", \"password\": \"Fitbook2026!\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         ""
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Coach : options du formulaire",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/coach/options",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "coach",
+        "options"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         "const o=pm.response.json();",
+         "pm.test('Salles et disciplines proposées', () => { pm.expect(o.salles.length).to.be.above(0); pm.expect(o.disciplines.length).to.be.above(0); });"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Coach : liste de ses séances",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/coach/seances",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "coach",
+        "seances"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         "pm.test('Au moins une séance avec nbReservations', () => { const l=pm.response.json(); pm.expect(l.length).to.be.above(0); pm.expect(l[0]).to.have.property('nbReservations'); });"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Coach : séance invalide refusée (validation backend)",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/coach/seances",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "coach",
+        "seances"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"titre\": \"A\", \"idSalle\": 1, \"idDiscipline\": 1, \"typeSeance\": \"collective\", \"dateDebut\": \"2027-03-15T11:00\", \"dateFin\": \"2027-03-15T10:00\", \"prix\": -5, \"placesMax\": 0}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 422', () => pm.response.to.have.status(422));",
+         "pm.test('Erreurs par champ', () => { const d=pm.response.json().details; pm.expect(d).to.have.property('titre'); pm.expect(d).to.have.property('dateFin'); pm.expect(d).to.have.property('prix'); pm.expect(d).to.have.property('placesMax'); });"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Coach : discipline qui n'est pas la sienne refusée",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/coach/seances",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "coach",
+        "seances"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"titre\": \"Test discipline\", \"idSalle\": 1, \"idDiscipline\": 3, \"typeSeance\": \"collective\", \"dateDebut\": \"2027-03-15T10:00\", \"dateFin\": \"2027-03-15T11:00\", \"prix\": 12, \"placesMax\": 8}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 422', () => pm.response.to.have.status(422));",
+         "pm.test('Erreur sur la discipline', () => pm.expect(pm.response.json().details).to.have.property('idDiscipline'));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Coach : créer une séance",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/coach/seances",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "coach",
+        "seances"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"titre\": \"Test Newman\", \"idSalle\": 1, \"idDiscipline\": 1, \"typeSeance\": \"collective\", \"dateDebut\": \"2027-03-15T10:00\", \"dateFin\": \"2027-03-15T11:00\", \"prix\": 12, \"placesMax\": 8}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 201', () => pm.response.to.have.status(201));",
+         "pm.test('Identifiant renvoyé', () => { const id=pm.response.json().id; pm.expect(id).to.be.above(0); pm.collectionVariables.set('idSeance', id); });"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Coach : chevauchement de créneau refusé",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/coach/seances",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "coach",
+        "seances"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"titre\": \"Test chevauchement\", \"idSalle\": 1, \"idDiscipline\": 1, \"typeSeance\": \"collective\", \"dateDebut\": \"2027-03-15T10:30\", \"dateFin\": \"2027-03-15T11:30\", \"prix\": 12, \"placesMax\": 8}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 409', () => pm.response.to.have.status(409));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Coach : modifier sa séance",
+     "request": {
+      "method": "PUT",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/coach/seances/{{idSeance}}",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "coach",
+        "seances",
+        "{{idSeance}}"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"titre\": \"Test Newman modifié\", \"idSalle\": 1, \"idDiscipline\": 1, \"typeSeance\": \"collective\", \"dateDebut\": \"2027-03-15T10:00\", \"dateFin\": \"2027-03-15T11:00\", \"prix\": 15, \"placesMax\": 9}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Coach : ne peut pas modifier la séance d'un autre coach",
+     "request": {
+      "method": "PUT",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/coach/seances/4",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "coach",
+        "seances",
+        "4"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"titre\": \"Piratage\", \"idSalle\": 2, \"idDiscipline\": 3, \"typeSeance\": \"collective\", \"dateDebut\": \"2027-03-16T10:00\", \"dateFin\": \"2027-03-16T11:00\", \"prix\": 1, \"placesMax\": 5}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 404', () => pm.response.to.have.status(404));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Coach : ne peut pas supprimer la séance d'un autre coach",
+     "request": {
+      "method": "DELETE",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/coach/seances/4",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "coach",
+        "seances",
+        "4"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 404', () => pm.response.to.have.status(404));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Coach : supprimer sa séance",
+     "request": {
+      "method": "DELETE",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/coach/seances/{{idSeance}}",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "coach",
+        "seances",
+        "{{idSeance}}"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         "pm.test('Séance supprimée', () => pm.expect(pm.response.json().message).to.include('supprim'));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Coach : suppression répétée -> introuvable",
+     "request": {
+      "method": "DELETE",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/coach/seances/{{idSeance}}",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "coach",
+        "seances",
+        "{{idSeance}}"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 404', () => pm.response.to.have.status(404));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Coach : ajouter une disponibilité",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/coach/disponibilites",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "coach",
+        "disponibilites"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"dateDebut\": \"2027-03-20T09:00\", \"dateFin\": \"2027-03-20T12:00\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 201', () => pm.response.to.have.status(201));",
+         "pm.test('Identifiant renvoyé', () => pm.collectionVariables.set('idDispo', pm.response.json().id));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Coach : liste des disponibilités",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/coach/disponibilites",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "coach",
+        "disponibilites"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         "pm.test('Disponibilité présente', () => pm.expect(pm.response.json().length).to.be.above(0));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Coach : disponibilité invalide refusée",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/coach/disponibilites",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "coach",
+        "disponibilites"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"dateDebut\": \"2027-03-20T12:00\", \"dateFin\": \"2027-03-20T09:00\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 422', () => pm.response.to.have.status(422));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Coach : retirer la disponibilité",
+     "request": {
+      "method": "DELETE",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/coach/disponibilites/{{idDispo}}",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "coach",
+        "disponibilites",
+        "{{idDispo}}"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Déconnexion",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/logout",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "logout"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));"
+        ]
+       }
+      }
+     ]
+    }
+   ]
   }
  ],
  "variable": [
@@ -2313,6 +3430,14 @@
   },
   {
    "key": "lienConfirmation",
+   "value": ""
+  },
+  {
+   "key": "idSeance",
+   "value": ""
+  },
+  {
+   "key": "idDispo",
    "value": ""
   }
  ]

@@ -13,8 +13,12 @@ import { AuthService } from './core/auth.service';
       </a>
       <nav aria-label="Navigation principale">
         <a routerLink="/salles" routerLinkActive="actif">Salles</a>
+        <a routerLink="/calendrier" routerLinkActive="actif">Calendrier</a>
         @if (auth.estSportif()) {
           <a routerLink="/mes-reservations" routerLinkActive="actif">Mes réservations</a>
+        }
+        @if (auth.user()?.role === 'coach') {
+          <a routerLink="/coach" routerLinkActive="actif">Mes séances</a>
         }
         @if (auth.user()?.role === 'admin' || auth.user()?.role === 'gestionnaire') {
           <a routerLink="/espace" routerLinkActive="actif">Mon espace</a>

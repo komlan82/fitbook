@@ -8,8 +8,8 @@ Projet UAA MI08 · Rapport établi le 2 novembre 2026 · Environnement : Windows
 |---|---|---|---|
 | Tests unitaires back-end | PHPUnit 12 | 16 tests, 21 assertions | 16 réussis, 0 échec |
 | Tests unitaires front-end | Vitest (Angular) | 3 tests | 3 réussis, 0 échec |
-| Tests d'API et d'intégration (HTTP + base MySQL réelle) | Postman / Newman | 56 requêtes, 82 assertions | 82 réussies, 0 échec |
-| Contrôle des permissions par rôle | Newman | groupes 03 et 06 | conformes |
+| Tests d'API et d'intégration (HTTP + base MySQL réelle) | Postman / Newman | 83 requêtes, 119 assertions | 119 réussies, 0 échec |
+| Contrôle des permissions par rôle | Newman | groupes 03, 06 et 08 | conformes |
 | Courbes de stress | script Node (`stress.mjs`) | 5 paliers × 2 routes | 0 erreur sur 493 requêtes, voir §5 |
 | Catalogue d'attaques | OWASP Top 10 + attaques courantes | 15 attaques répertoriées + 2 limites notées | 10 testées automatiquement, 4 mitigées par conception, 1 non couverte (HTTPS), voir §4 |
 
@@ -38,7 +38,7 @@ Preuves : `tests/rapport/rapport-newman.html` (rapport complet), captures de la 
 | F-02 | `AuthService` : sportif seulement avec le rôle `sportif` | réussi |
 | F-03 | `messageErreur` : message de l'API prioritaire, message dédié si l'API est injoignable | réussi |
 
-### 2.3 Tests d'intégration et d'API (Newman – 56 requêtes)
+### 2.3 Tests d'intégration et d'API (Newman – 83 requêtes)
 
 | Groupe | Scénarios | Résultat |
 |---|---|---|
@@ -50,8 +50,9 @@ Preuves : `tests/rapport/rapport-newman.html` (rapport complet), captures de la 
 | 05 Avis, favoris, contact | avis refusé (séance non suivie, salle ET coach, note hors limites), favoris (ajout, liste, retrait), contact valide, contact refusé par le JSON schema MySQL | réussi |
 | 06 Droits par rôle | admin : liste des utilisateurs sans mot de passe, admin ne peut pas réserver, validation invalide refusée ; gestionnaire : ses salles, accès admin refusé | réussi |
 | 07 Sauvegardes | journal et message visible | réussi |
+| 08 Calendrier et espace coach | calendrier public (période, dates inversées ou invalides refusées) ; espace coach : 401 sans connexion, 403 pour sportif et gestionnaire ; options du formulaire ; séance invalide refusée (champs titre, dates, prix, places) ; discipline d'un autre coach refusée ; création, chevauchement de créneau refusé (409), modification, suppression ; un coach ne peut ni modifier ni supprimer la séance d'un autre (404) ; disponibilités (ajout, liste, refus, retrait) | réussi |
 
-Le jeu de tests est rejouable : deux passages successifs ont donné le même résultat (56/56, 82/82).
+Le jeu de tests est rejouable : deux passages successifs ont donné le même résultat (83/83 requêtes, 119/119 assertions).
 
 ## 3. Exigences de la partie 4 – couverture
 
@@ -59,7 +60,7 @@ Le jeu de tests est rejouable : deux passages successifs ont donné le même ré
 |---|---|---|
 | Tests unitaires | PHPUnit (16) et Vitest (3) | captures |
 | Tests d'intégration | Newman sur API + MySQL réels | rapport HTML |
-| Tests API Postman / Newman | 56 requêtes | `tests/postman/` |
+| Tests API Postman / Newman | 83 requêtes | `tests/postman/` |
 | Validation des formulaires côté back-end | Symfony Validator (nom, e-mail, mot de passe), JSON schema MySQL pour le contact | tests 02, 03, 05 |
 | Contrôle des permissions par rôle | `access_control` + `#[IsGranted]` (sportif, gestionnaire, admin) | groupe 06 |
 | Protection des données d'authentification | mots de passe hachés (bcrypt/auto), jamais renvoyés par l'API, hash absent de la session | U-16, test « Aucun mot de passe exposé » |

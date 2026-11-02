@@ -89,6 +89,21 @@ p.erreur { background: var(--warn); padding: .7rem 1rem; border-radius: 10px; }
 .tableau { width: 100%; border-collapse: collapse; background: var(--carte); border: 1px solid var(--bor); border-radius: var(--rayon); overflow: hidden;
   th, td { text-align: left; padding: .6rem .8rem; border-bottom: 1px solid var(--bor); } th { color: var(--mut); font-size: .85rem; } }
 
+/* Calendrier hebdomadaire */
+.cal-nav { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; margin: 1rem 0; }
+.cal-nav strong { flex: 1; min-width: 180px; text-align: center; }
+.cal-grille { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: .6rem; }
+.cal-jour { background: var(--carte); border: 1px solid var(--bor); border-radius: var(--rayon); padding: .6rem; min-height: 120px;
+  h3 { font-size: .9rem; text-transform: capitalize; margin: 0 0 .5rem; color: var(--mut); }
+  &.aujourdhui { border-color: var(--grn); box-shadow: 0 0 0 2px var(--chip); } }
+.cal-seance { display: grid; gap: .2rem; padding: .5rem .6rem; margin-bottom: .5rem; text-decoration: none; color: inherit; font-size: .9rem; }
+.cal-seance .meta { font-size: .8rem; margin: 0; }
+@media (max-width: 900px) { .cal-grille { grid-template-columns: 1fr; } }
+
+/* Espace coach */
+.grille-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+.defilant { overflow-x: auto; }
+
 @media (max-width: 600px) {
   .entete { gap: .5rem 1rem; }
   .seance { align-items: flex-start; }
