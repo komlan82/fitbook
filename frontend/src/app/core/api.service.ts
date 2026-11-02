@@ -2,8 +2,8 @@ import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http'
 import { Injectable, inject } from '@angular/core';
 import { map } from 'rxjs';
 import {
-  Avis, Favori, Reservation, ReponseApi, SalleFiche, SalleGestionnaire, SalleResume,
-  SauvegardeJournal, Seance, UtilisateurAdmin,
+  Avis, Disponibilite, Favori, FormSeance, OptionsCoach, Reservation, ReponseApi, SalleFiche, SalleGestionnaire,
+  SalleResume, SauvegardeJournal, Seance, SeanceCalendrier, SeanceCoach, UtilisateurAdmin,
 } from './models';
 
 /** "2026-11-07 10:00:00" (MySQL) -> "2026-11-07T10:00:00" (lisible par le DatePipe). */
@@ -70,4 +70,32 @@ export class ApiService {
   }
   adminUtilisateurs() { return this.http.get<UtilisateurAdmin[]>('/api/admin/utilisateurs'); }
   gestionnaireSalles() { return this.http.get<SalleGestionnaire[]>('/api/gestionnaire/salles'); }
+
+  /** Calendrier public : séances ouvertes entre deux dates (début inclus, fin exclue, AAAA-MM-JJ). */
+  calendrier(debut: string, fin: string) {
+    const params = new HttpParams().set('debut', debut).set('fin', fin);
+    return this.http.get<SeanceCalendrier[]>('/api/calendrier', { params }).pipe(
+      map((l) => l.map((x) => ({ ...x, dateDebut: iso(x.dateDebut), dateFin: iso(x.dateFin) }))),
+    );
+  }
+
+  // Espace coach
+  coachOptions() { return this.http.get<OptionsCoach>('/api/coach/options'); }
+  coachSeances() {
+    return this.http.get<SeanceCoach[]>('/api/coach/seances').pipe(
+      map((l) => l.map((x) => ({ ...x, dateDebut: iso(x.dateDebut), dateFin: iso(x.dateFin) }))),
+    );
+  }
+  creerSeance(f: FormSeance) { return this.http.post<ReponseApi>('/api/coach/seances', f); }
+  modifierSeance(id: number, f: FormSeance) { return this.http.put<ReponseApi>(`/api/coach/seances/${id}`, f); }
+  supprimerSeance(id: number) { return this.http.delete<ReponseApi>(`/api/coach/seances/${id}`); }
+  disponibilites() {
+    return this.http.get<Disponibilite[]>('/api/coach/disponibilites').pipe(
+      map((l) => l.map((x) => ({ ...x, dateDebut: iso(x.dateDebut), dateFin: iso(x.dateFin) }))),
+    );
+  }
+  ajouterDisponibilite(dateDebut: string, dateFin: string) {
+    return this.http.post<ReponseApi>('/api/coach/disponibilites', { dateDebut, dateFin });
+  }
+  supprimerDisponibilite(id: number) { return this.http.delete<ReponseApi>(`/api/coach/disponibilites/${id}`); }
 }

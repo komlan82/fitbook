@@ -31,8 +31,10 @@ security:
     access_control:
         - { path: ^/api/(login|register|confirm|contact|health|sauvegardes), roles: PUBLIC_ACCESS }
         - { path: ^/api/salles, methods: [GET], roles: PUBLIC_ACCESS }
+        - { path: ^/api/calendrier, methods: [GET], roles: PUBLIC_ACCESS }
         - { path: ^/api/admin, roles: ROLE_ADMIN }
         - { path: ^/api/gestionnaire, roles: ROLE_GESTIONNAIRE }
+        - { path: ^/api/coach, roles: ROLE_COACH }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
