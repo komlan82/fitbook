@@ -77,11 +77,15 @@ class AuthController extends ApiController
             new \DateTimeImmutable('+1 hour'),
         );
         try {
+            // Version HTML : lien cliquable (bouton) ; la version texte reste pour les clients sans HTML.
+            $prenomHtml = htmlspecialchars($user->getPrenom(), ENT_QUOTES);
+            $lienHtml = htmlspecialchars($lien, ENT_QUOTES);
             $mailer->send((new Email())
                 ->from('no-reply@fitbook.local')
                 ->to($user->getEmail())
                 ->subject('FitBook : confirmez votre adresse email')
-                ->text("Bonjour {$user->getPrenom()},\n\nPour activer votre compte FitBook, ouvrez ce lien (valable 1 heure) :\n$lien\n"));
+                ->text("Bonjour {$user->getPrenom()},\n\nPour activer votre compte FitBook, ouvrez ce lien (valable 1 heure) :\n$lien\n")
+                ->html("<p>Bonjour $prenomHtml,</p><p>Pour activer votre compte FitBook, cliquez sur le bouton (lien valable 1 heure) :</p><p><a href=\"$lienHtml\" style=\"background:#0B7A62;color:#ffffff;padding:10px 18px;border-radius:6px;text-decoration:none;font-weight:bold\">Confirmer mon adresse email</a></p><p>Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :<br>$lienHtml</p>"));
         } catch (\Throwable) {
             // L'inscription reste valide même si le serveur de messagerie est indisponible.
         }
