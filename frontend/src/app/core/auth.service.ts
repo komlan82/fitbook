@@ -21,8 +21,8 @@ export class AuthService {
   connexion(email: string, password: string) {
     return this.http.post<Utilisateur>('/api/login', { email, password }).pipe(tap((u) => this.user.set(u)));
   }
-  inscription(nom: string, prenom: string, email: string, password: string) {
-    return this.http.post<{ message: string; lienConfirmationDev?: string }>('/api/register', { nom, prenom, email, password });
+  inscription(nom: string, prenom: string, email: string, password: string, role: string) {
+    return this.http.post<{ message: string; lienConfirmationDev?: string }>('/api/register', { nom, prenom, email, password, role });
   }
   deconnexion() {
     return this.http.post('/api/logout', {}).pipe(tap(() => this.user.set(null)));
