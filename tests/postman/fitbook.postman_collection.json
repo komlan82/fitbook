@@ -4639,6 +4639,1272 @@
      ]
     }
    ]
+  },
+  {
+   "name": "10 - Modération des avis et disciplines",
+   "item": [
+    {
+     "name": "Connexion lea@fitbook.test -> 200",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/login",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "login"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"email\": \"lea@fitbook.test\", \"password\": \"Fitbook2026!\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         ""
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Sportif : signaler un avis (avis 1)",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/avis/1/signalement",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "avis",
+        "1",
+        "signalement"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Sportif : signaler un avis (avis 3)",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/avis/3/signalement",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "avis",
+        "3",
+        "signalement"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Sportif : avis inexistant -> 404",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/avis/999999/signalement",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "avis",
+        "999999",
+        "signalement"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 404', () => pm.response.to.have.status(404));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Sportif : avis à modérer interdit",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/admin/avis-signales",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "admin",
+        "avis-signales"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 403', () => pm.response.to.have.status(403));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Sportif : disciplines admin interdites",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/admin/disciplines",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "admin",
+        "disciplines"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 403', () => pm.response.to.have.status(403));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Déconnexion",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/logout",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "logout"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Connexion gestionnaire@fitbook.test -> 200",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/login",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "login"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"email\": \"gestionnaire@fitbook.test\", \"password\": \"Fitbook2026!\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         ""
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Gestionnaire : ne peut pas signaler un avis",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/avis/1/signalement",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "avis",
+        "1",
+        "signalement"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 403', () => pm.response.to.have.status(403));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Gestionnaire : avis à modérer interdit",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/admin/avis-signales",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "admin",
+        "avis-signales"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 403', () => pm.response.to.have.status(403));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Déconnexion",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/logout",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "logout"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Connexion admin@fitbook.test -> 200",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/login",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "login"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"email\": \"admin@fitbook.test\", \"password\": \"Fitbook2026!\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         ""
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Admin : ne peut pas signaler un avis (réservé aux sportifs)",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/avis/1/signalement",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "avis",
+        "1",
+        "signalement"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 403', () => pm.response.to.have.status(403));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Admin : liste des avis signalés",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/admin/avis-signales",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "admin",
+        "avis-signales"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         "pm.test('Avis 1 et 3 signalés', () => { const l=pm.response.json(); const ids=l.map(a => a.id); pm.expect(ids).to.include(1); pm.expect(ids).to.include(3); l.forEach(a => pm.expect(a).to.have.all.keys('id','cible','note','commentaire','dateAvis','auteur')); });"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Admin : décision invalide refusée",
+     "request": {
+      "method": "PATCH",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/admin/avis/1/moderation",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "admin",
+        "avis",
+        "1",
+        "moderation"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"decision\": \"supprimer\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 422', () => pm.response.to.have.status(422));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Admin : conserver un avis",
+     "request": {
+      "method": "PATCH",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/admin/avis/1/moderation",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "admin",
+        "avis",
+        "1",
+        "moderation"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"decision\": \"conserver\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Admin : masquer un avis",
+     "request": {
+      "method": "PATCH",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/admin/avis/3/moderation",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "admin",
+        "avis",
+        "3",
+        "moderation"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"decision\": \"masquer\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Admin : les avis traités ne sont plus signalés",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/admin/avis-signales",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "admin",
+        "avis-signales"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         "pm.test('Plus d\\'avis 1 ni 3', () => { const ids=pm.response.json().map(a => a.id); pm.expect(ids).to.not.include(1); pm.expect(ids).to.not.include(3); });"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Admin : avis déjà traité -> introuvable",
+     "request": {
+      "method": "PATCH",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/admin/avis/1/moderation",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "admin",
+        "avis",
+        "1",
+        "moderation"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"decision\": \"conserver\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 404', () => pm.response.to.have.status(404));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Avis conservé toujours visible sur la fiche salle",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/salles/1",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "salles",
+        "1"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         "pm.test('Avis 1 toujours en ligne', () => pm.expect(pm.response.json().avis.some(a => a.id === 1)).to.be.true);"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Admin : liste des disciplines",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/admin/disciplines",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "admin",
+        "disciplines"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         "pm.test('Disciplines avec nombre de séances', () => { const l=pm.response.json(); pm.expect(l.some(d => d.libelle === 'Yoga' && d.nbSeances > 0)).to.be.true; });"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Admin : discipline invalide refusée",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/admin/disciplines",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "admin",
+        "disciplines"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"libelle\": \"\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 422', () => pm.response.to.have.status(422));",
+         "pm.test('Erreur sur le champ libelle', () => pm.expect(pm.response.json().details).to.have.property('libelle'));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Admin : ajouter une discipline",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/admin/disciplines",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "admin",
+        "disciplines"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"libelle\": \"{{libelleDiscipline}}\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "prerequest",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.collectionVariables.set('libelleDiscipline', 'Test ' + Date.now());"
+        ]
+       }
+      },
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 201', () => pm.response.to.have.status(201));",
+         "pm.test('Identifiant renvoyé', () => { const j=pm.response.json(); pm.expect(j.id).to.be.a('number'); pm.collectionVariables.set('idDisciplineTest', j.id); });"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Admin : discipline en double refusée",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/admin/disciplines",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "admin",
+        "disciplines"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"libelle\": \"{{libelleDiscipline}}\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 409', () => pm.response.to.have.status(409));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Admin : renommer une discipline",
+     "request": {
+      "method": "PUT",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/admin/disciplines/{{idDisciplineTest}}",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "admin",
+        "disciplines",
+        "{{idDisciplineTest}}"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"libelle\": \"{{libelleDiscipline}} bis\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Admin : renommer en un nom existant refusé",
+     "request": {
+      "method": "PUT",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/admin/disciplines/{{idDisciplineTest}}",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "admin",
+        "disciplines",
+        "{{idDisciplineTest}}"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"libelle\": \"Yoga\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 409', () => pm.response.to.have.status(409));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Admin : renommer une discipline inexistante",
+     "request": {
+      "method": "PUT",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/admin/disciplines/999999",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "admin",
+        "disciplines",
+        "999999"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"libelle\": \"Autre\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 404', () => pm.response.to.have.status(404));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Admin : supprimer une discipline inutilisée",
+     "request": {
+      "method": "DELETE",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/admin/disciplines/{{idDisciplineTest}}",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "admin",
+        "disciplines",
+        "{{idDisciplineTest}}"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Admin : suppression répétée -> introuvable",
+     "request": {
+      "method": "DELETE",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/admin/disciplines/{{idDisciplineTest}}",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "admin",
+        "disciplines",
+        "{{idDisciplineTest}}"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 404', () => pm.response.to.have.status(404));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Admin : discipline utilisée non supprimable (Yoga)",
+     "request": {
+      "method": "DELETE",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/admin/disciplines/1",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "admin",
+        "disciplines",
+        "1"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 409', () => pm.response.to.have.status(409));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Déconnexion",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/logout",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "logout"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));"
+        ]
+       }
+      }
+     ]
+    }
+   ]
   }
  ],
  "variable": [
@@ -4668,6 +5934,14 @@
   },
   {
    "key": "idSalleTest",
+   "value": ""
+  },
+  {
+   "key": "libelleDiscipline",
+   "value": ""
+  },
+  {
+   "key": "idDisciplineTest",
    "value": ""
   }
  ]

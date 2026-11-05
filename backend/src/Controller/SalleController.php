@@ -69,7 +69,7 @@ class SalleController extends ApiController
             ['id' => $id],
         );
         $salle['avis'] = $db->fetchAllAssociative(
-            "SELECT a.note, a.commentaire, a.date_avis AS dateAvis, CONCAT(u.prenom, ' ', LEFT(u.nom, 1), '.') AS auteur
+            "SELECT a.id_avis AS id, a.note, a.commentaire, a.date_avis AS dateAvis, CONCAT(u.prenom, ' ', LEFT(u.nom, 1), '.') AS auteur
              FROM avis a JOIN utilisateur u ON u.id_utilisateur = a.id_utilisateur
              WHERE a.id_salle = :id AND a.visible = 1 ORDER BY a.date_avis DESC",
             ['id' => $id],

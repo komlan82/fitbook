@@ -8,7 +8,7 @@ export interface Seance {
   id: number; titre: string; dateDebut: string; dateFin: string; prix: string;
   placesMax: number; discipline: string; coach: string; placesRestantes: number;
 }
-export interface Avis { note: number; commentaire: string | null; dateAvis: string; auteur: string; }
+export interface Avis { id: number; note: number; commentaire: string | null; dateAvis: string; auteur: string; }
 export interface SalleFiche extends SalleResume { seances: Seance[]; avis: Avis[]; }
 
 export interface Reservation {
@@ -26,6 +26,8 @@ export interface FormSalle { nom: string; adresse: string; ville: string; codePo
 export interface ReservationGestionnaire { salle: string; titre: string; dateDebut: string; sportif: string; statut: 'confirmee' | 'en_attente' | 'annulee'; dateReservation: string; }
 export interface AvisGestionnaire { salle: string; note: number; commentaire: string | null; dateAvis: string; auteur: string; }
 export interface SalleAdmin { id: number; nom: string; adresse: string; ville: string; statutValidation: 'en_attente' | 'validee' | 'refusee'; gestionnaire: string; }
+export interface AvisSignale { id: number; cible: string; note: number; commentaire: string | null; dateAvis: string; auteur: string; }
+export interface Discipline { id: number; libelle: string; nbSeances: number; }
 export interface ReponseApi { code?: string; message?: string; }
 
 export interface SeanceCalendrier {
