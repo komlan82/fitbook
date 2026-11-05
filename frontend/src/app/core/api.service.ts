@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { map } from 'rxjs';
 import {
   Avis, AvisGestionnaire, Disponibilite, Favori, FormSalle, FormSeance, OptionsCoach, Reservation, ReponseApi, SalleFiche, SalleGestionnaire,
-  AvisSignale, Discipline, ReservationGestionnaire, SalleAdmin, SalleResume, SauvegardeJournal, Seance, SeanceCalendrier, SeanceCoach, UtilisateurAdmin,
+  AvisSignale, Discipline, MonAvis, Utilisateur, ReservationGestionnaire, SalleAdmin, SalleResume, SauvegardeJournal, Seance, SeanceCalendrier, SeanceCoach, UtilisateurAdmin,
 } from './models';
 
 /** "2026-11-07 10:00:00" (MySQL) -> "2026-11-07T10:00:00" (lisible par le DatePipe). */
@@ -55,6 +55,14 @@ export class ApiService {
   publierAvis(idSalle: number, note: number, commentaire: string) {
     return this.http.post<ReponseApi>('/api/avis', { idSalle, note, commentaire: commentaire || null });
   }
+
+  publierAvisCoach(idCoach: number, note: number, commentaire: string) {
+    return this.http.post<ReponseApi>('/api/avis', { idCoach, note, commentaire: commentaire || null });
+  }
+  mesAvis() {
+    return this.http.get<MonAvis[]>('/api/mes-avis').pipe(map((l) => l.map((a) => ({ ...a, dateAvis: iso(a.dateAvis) }))));
+  }
+  majProfil(nom: string, prenom: string) { return this.http.put<Utilisateur>('/api/me', { nom, prenom }); }
 
   favoris() { return this.http.get<Favori[]>('/api/favoris/salles'); }
   ajouterFavori(id: number) { return this.http.post<ReponseApi>(`/api/favoris/salles/${id}`, {}); }

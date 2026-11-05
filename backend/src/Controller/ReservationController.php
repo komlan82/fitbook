@@ -22,7 +22,7 @@ class ReservationController extends ApiController
     {
         return new JsonResponse($db->fetchAllAssociative(
             "SELECT r.id_seance AS idSeance, r.statut, r.date_reservation AS dateReservation,
-                    se.titre, se.date_debut AS dateDebut, sa.nom AS salle, sa.ville
+                    se.titre, se.date_debut AS dateDebut, se.id_salle AS idSalle, se.id_coach AS idCoach, sa.nom AS salle, sa.ville
              FROM reserver r
              JOIN seance se ON se.id_seance = r.id_seance
              JOIN salle sa ON sa.id_salle = se.id_salle
