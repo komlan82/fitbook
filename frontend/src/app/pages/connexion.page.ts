@@ -49,7 +49,7 @@ export class ConnexionPage {
     this.envoi.set(true);
     this.erreur.set('');
     this.auth.connexion(email, password).subscribe({
-      next: (u) => this.router.navigateByUrl(u.role === 'sportif' ? '/salles' : '/espace'),
+      next: (u) => this.router.navigateByUrl(u.role === 'sportif' ? '/salles' : u.role === 'coach' ? '/coach' : '/espace'),
       error: (e) => { this.erreur.set(messageErreur(e)); this.envoi.set(false); },
     });
   }

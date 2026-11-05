@@ -27,11 +27,7 @@ class CoachController extends ApiController
 
         return new JsonResponse([
             'salles' => $db->fetchAllAssociative("SELECT id_salle AS id, nom, ville FROM salle WHERE statut_validation = 'validee' ORDER BY nom"),
-            'disciplines' => $db->fetchAllAssociative(
-                'SELECT d.id_discipline AS id, d.libelle FROM specialiser sp JOIN discipline d ON d.id_discipline = sp.id_discipline
-                 WHERE sp.id_coach = :c ORDER BY d.libelle',
-                ['c' => $idCoach],
-            ),
+            'disciplines' => $db->fetchAllAssociative('SELECT id_discipline AS id, libelle FROM discipline ORDER BY libelle'),
         ]);
     }
 
@@ -76,8 +72,17 @@ class CoachController extends ApiController
         $db->executeStatement(
             'INSERT INTO seance (id_coach, id_salle, id_discipline, titre, type_seance, date_debut, date_fin, prix, places_max)
              VALUES (:c, :salle, :disc, :titre, :type, :debut, :fin, :prix, :places)',
-            ['c' => $idCoach, 'salle' => $s['idSalle'], 'disc' => $s['idDiscipline'], 'titre' => $s['titre'], 'type' => $s['type'],
-             'debut' => $s['debut'], 'fin' => $s['fin'], 'prix' => $s['prix'], 'places' => $s['places']],
+            [
+                'c' => $idCoach,
+                'salle' => $s['idSalle'],
+                'disc' => $s['idDiscipline'],
+                'titre' => $s['titre'],
+                'type' => $s['type'],
+                'debut' => $s['debut'],
+                'fin' => $s['fin'],
+                'prix' => $s['prix'],
+                'places' => $s['places']
+            ],
         );
 
         return new JsonResponse(['id' => (int) $db->lastInsertId(), 'message' => 'Séance créée.'], 201);
@@ -114,8 +119,18 @@ class CoachController extends ApiController
             'UPDATE seance SET id_salle = :salle, id_discipline = :disc, titre = :titre, type_seance = :type,
                     date_debut = :debut, date_fin = :fin, prix = :prix, places_max = :places
              WHERE id_seance = :id AND id_coach = :c',
-            ['salle' => $s['idSalle'], 'disc' => $s['idDiscipline'], 'titre' => $s['titre'], 'type' => $s['type'],
-             'debut' => $s['debut'], 'fin' => $s['fin'], 'prix' => $s['prix'], 'places' => $s['places'], 'id' => $id, 'c' => $idCoach],
+            [
+                'salle' => $s['idSalle'],
+                'disc' => $s['idDiscipline'],
+                'titre' => $s['titre'],
+                'type' => $s['type'],
+                'debut' => $s['debut'],
+                'fin' => $s['fin'],
+                'prix' => $s['prix'],
+                'places' => $s['places'],
+                'id' => $id,
+                'c' => $idCoach
+            ],
         );
 
         return new JsonResponse(['message' => 'Séance modifiée.']);
@@ -181,9 +196,15 @@ class CoachController extends ApiController
         $debut = $this->dateHeure($b['dateDebut'] ?? null);
         $fin = $this->dateHeure($b['dateFin'] ?? null);
         $erreurs = [];
-        if (!$debut) { $erreurs['dateDebut'] = 'Date de début invalide.'; }
-        if (!$fin) { $erreurs['dateFin'] = 'Date de fin invalide.'; }
-        if ($debut && $fin && $fin <= $debut) { $erreurs['dateFin'] = 'La fin doit être après le début.'; }
+        if (!$debut) {
+            $erreurs['dateDebut'] = 'Date de début invalide.';
+        }
+        if (!$fin) {
+            $erreurs['dateFin'] = 'Date de fin invalide.';
+        }
+        if ($debut && $fin && $fin <= $debut) {
+            $erreurs['dateFin'] = 'La fin doit être après le début.';
+        }
         if ($erreurs) {
             return $this->erreur('Formulaire invalide.', 422, $erreurs);
         }
@@ -256,8 +277,8 @@ class CoachController extends ApiController
         }
 
         $idDiscipline = filter_var($b['idDiscipline'] ?? null, FILTER_VALIDATE_INT);
-        if ($idDiscipline === false || !$db->fetchOne('SELECT 1 FROM specialiser WHERE id_coach = :c AND id_discipline = :d', ['c' => $idCoach, 'd' => $idDiscipline])) {
-            $e['idDiscipline'] = 'Choisissez une de vos disciplines.';
+        if ($idDiscipline === false || !$db->fetchOne('SELECT 1 FROM discipline WHERE id_discipline = :d', ['d' => $idDiscipline])) {
+            $e['idDiscipline'] = 'Choisissez une discipline.';
         }
 
         $type = $b['typeSeance'] ?? 'collective';
@@ -267,8 +288,12 @@ class CoachController extends ApiController
 
         $debut = $this->dateHeure($b['dateDebut'] ?? null);
         $fin = $this->dateHeure($b['dateFin'] ?? null);
-        if (!$debut) { $e['dateDebut'] = 'Date de début invalide.'; }
-        if (!$fin) { $e['dateFin'] = 'Date de fin invalide.'; }
+        if (!$debut) {
+            $e['dateDebut'] = 'Date de début invalide.';
+        }
+        if (!$fin) {
+            $e['dateFin'] = 'Date de fin invalide.';
+        }
         if ($debut && $fin) {
             if ($fin <= $debut) {
                 $e['dateFin'] = 'La fin doit être après le début.';
@@ -290,9 +315,14 @@ class CoachController extends ApiController
         }
 
         return [$e, [
-            'titre' => $titre, 'idSalle' => $idSalle, 'idDiscipline' => $idDiscipline, 'type' => $type,
-            'debut' => $debut?->format('Y-m-d H:i:s'), 'fin' => $fin?->format('Y-m-d H:i:s'),
-            'prix' => is_numeric($prix) ? round((float) $prix, 2) : 0, 'places' => $places,
+            'titre' => $titre,
+            'idSalle' => $idSalle,
+            'idDiscipline' => $idDiscipline,
+            'type' => $type,
+            'debut' => $debut?->format('Y-m-d H:i:s'),
+            'fin' => $fin?->format('Y-m-d H:i:s'),
+            'prix' => is_numeric($prix) ? round((float) $prix, 2) : 0,
+            'places' => $places,
         ]];
     }
 }

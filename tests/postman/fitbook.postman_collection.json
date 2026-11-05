@@ -697,7 +697,7 @@
       },
       "body": {
        "mode": "raw",
-       "raw": "{\"nom\": \"Testeur\", \"prenom\": \"Auto\", \"email\": \"{{emailTest}}\", \"password\": \"MotDePasse2026\", \"role\": \"admin\"}"
+       "raw": "{\"nom\": \"Testeur\", \"prenom\": \"Auto\", \"email\": \"{{emailTest}}\", \"password\": \"MotDePasse2026\"}"
       }
      },
      "event": [
@@ -916,7 +916,7 @@
         "type": "text/javascript",
         "exec": [
          "pm.test('Statut 200', () => pm.response.to.have.status(200));",
-         "pm.test('Rôle forcé à sportif (pas de promotion admin)', () => pm.expect(pm.response.json().role).to.eql('sportif'));"
+         "pm.test('Rôle par défaut : sportif', () => pm.expect(pm.response.json().role).to.eql('sportif'));"
         ]
        }
       }
@@ -2885,7 +2885,7 @@
      ]
     },
     {
-     "name": "Coach : discipline qui n'est pas la sienne refusée",
+     "name": "Coach : discipline inexistante refusée",
      "request": {
       "method": "POST",
       "header": [
@@ -2911,7 +2911,7 @@
       },
       "body": {
        "mode": "raw",
-       "raw": "{\"titre\": \"Test discipline\", \"idSalle\": 1, \"idDiscipline\": 3, \"typeSeance\": \"collective\", \"dateDebut\": \"2027-03-15T10:00\", \"dateFin\": \"2027-03-15T11:00\", \"prix\": 12, \"placesMax\": 8}"
+       "raw": "{\"titre\": \"Test discipline\", \"idSalle\": 1, \"idDiscipline\": 9999, \"typeSeance\": \"collective\", \"dateDebut\": \"2027-03-15T10:00\", \"dateFin\": \"2027-03-15T11:00\", \"prix\": 12, \"placesMax\": 8}"
       }
      },
      "event": [
@@ -3417,6 +3417,498 @@
      ]
     }
    ]
+  },
+  {
+   "name": "09 - Inscription avec choix du rôle",
+   "item": [
+    {
+     "name": "Inscription en coach acceptée",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/register",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "register"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"nom\": \"Testeur\", \"prenom\": \"Role\", \"email\": \"{{emailRole}}\", \"password\": \"MotDePasse2026\", \"role\": \"coach\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "prerequest",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.collectionVariables.set('emailRole', 'coach' + Date.now() + '@fitbook.test');"
+        ]
+       }
+      },
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 201', () => pm.response.to.have.status(201));",
+         "const j=pm.response.json();",
+         "pm.test('Lien de confirmation fourni (dev)', () => pm.expect(j.lienConfirmationDev).to.be.a('string'));",
+         "pm.collectionVariables.set('lienConfirmation', j.lienConfirmationDev);"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Confirmation du compte coach",
+     "request": {
+      "method": "GET",
+      "header": [],
+      "url": "{{lienConfirmation}}"
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Redirection après confirmation', () => pm.expect(pm.response.code).to.be.oneOf([301,302,303]));"
+        ]
+       }
+      }
+     ],
+     "protocolProfileBehavior": {
+      "followRedirects": false
+     }
+    },
+    {
+     "name": "Connexion du coach : rôle coach",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/login",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "login"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"email\": \"{{emailRole}}\", \"password\": \"MotDePasse2026\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         "pm.test('Rôle enregistré : coach', () => pm.expect(pm.response.json().role).to.eql('coach'));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Fiche coach créée : espace coach accessible",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/coach/options",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "coach",
+        "options"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200 (fiche coach trouvée)', () => pm.response.to.have.status(200));",
+         "pm.test('Toutes les disciplines proposées', () => pm.expect(pm.response.json().disciplines.length).to.be.above(0));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Déconnexion",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/logout",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "logout"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Inscription en gestionnaire acceptée",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/register",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "register"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"nom\": \"Testeur\", \"prenom\": \"Role\", \"email\": \"{{emailRole}}\", \"password\": \"MotDePasse2026\", \"role\": \"gestionnaire\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "prerequest",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.collectionVariables.set('emailRole', 'gest' + Date.now() + '@fitbook.test');"
+        ]
+       }
+      },
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 201', () => pm.response.to.have.status(201));",
+         "const j=pm.response.json();",
+         "pm.test('Lien de confirmation fourni (dev)', () => pm.expect(j.lienConfirmationDev).to.be.a('string'));",
+         "pm.collectionVariables.set('lienConfirmation', j.lienConfirmationDev);"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Confirmation du compte gestionnaire",
+     "request": {
+      "method": "GET",
+      "header": [],
+      "url": "{{lienConfirmation}}"
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Redirection après confirmation', () => pm.expect(pm.response.code).to.be.oneOf([301,302,303]));"
+        ]
+       }
+      }
+     ],
+     "protocolProfileBehavior": {
+      "followRedirects": false
+     }
+    },
+    {
+     "name": "Connexion du gestionnaire : rôle gestionnaire",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/login",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "login"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"email\": \"{{emailRole}}\", \"password\": \"MotDePasse2026\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         "pm.test('Rôle enregistré : gestionnaire', () => pm.expect(pm.response.json().role).to.eql('gestionnaire'));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Gestionnaire inscrit : espace gestionnaire accessible",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/gestionnaire/salles",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "gestionnaire",
+        "salles"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Déconnexion",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/logout",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "logout"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Inscription en admin refusée",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/register",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "register"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"nom\": \"Testeur\", \"prenom\": \"Role\", \"email\": \"{{emailRole}}\", \"password\": \"MotDePasse2026\", \"role\": \"admin\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "prerequest",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.collectionVariables.set('emailRole', 'admin' + Date.now() + '@fitbook.test');"
+        ]
+       }
+      },
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 422', () => pm.response.to.have.status(422));",
+         "pm.test('Erreur sur le champ role', () => pm.expect(pm.response.json().details).to.have.property('role'));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Rôle inconnu refusé",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/register",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "register"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"nom\": \"Testeur\", \"prenom\": \"Role\", \"email\": \"{{emailRole}}\", \"password\": \"MotDePasse2026\", \"role\": \"superman\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "prerequest",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.collectionVariables.set('emailRole', 'inconnu' + Date.now() + '@fitbook.test');"
+        ]
+       }
+      },
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 422', () => pm.response.to.have.status(422));",
+         "pm.test('Erreur sur le champ role', () => pm.expect(pm.response.json().details).to.have.property('role'));"
+        ]
+       }
+      }
+     ]
+    }
+   ]
   }
  ],
  "variable": [
@@ -3438,6 +3930,10 @@
   },
   {
    "key": "idDispo",
+   "value": ""
+  },
+  {
+   "key": "emailRole",
    "value": ""
   }
  ]

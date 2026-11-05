@@ -31,13 +31,17 @@ class AuthController extends ApiController
     ): JsonResponse {
         $data = $this->body($request);
         // On ne lit que les champs prévus : le rôle ne peut JAMAIS être fourni par le client.
+        // Le rôle est choisi à l'inscription, mais seulement parmi une liste blanche.
+        // « admin » n'est JAMAIS accepté : un admin se crée uniquement en base de données.
         $input = [
             'nom' => $data['nom'] ?? null,
             'prenom' => $data['prenom'] ?? null,
             'email' => isset($data['email']) && is_string($data['email']) ? strtolower(trim($data['email'])) : ($data['email'] ?? null),
             'password' => $data['password'] ?? null,
+            'role' => $data['role'] ?? 'sportif',
         ];
         $nomRegex = new Assert\Regex(pattern: "/^[\p{L}\p{M}' \-]{2,80}$/u", message: 'Lettres, espaces, apostrophes et tirets uniquement (2 à 80 caractères).');
+
         $violations = $validator->validate($input, new Assert\Collection([
             'nom' => [new Assert\NotBlank(message: 'Le nom est obligatoire.'), new Assert\Type('string'), $nomRegex],
             'prenom' => [new Assert\NotBlank(message: 'Le prénom est obligatoire.'), new Assert\Type('string'), $nomRegex],
@@ -45,9 +49,10 @@ class AuthController extends ApiController
             'password' => [
                 new Assert\NotBlank(message: 'Le mot de passe est obligatoire.'),
                 new Assert\Type('string'),
-                new Assert\Length(min: 10, max: 72, minMessage: 'Au moins 10 caractères.', maxMessage: 'Au plus 72 caractères.'),
+                new Assert\Length(min: 8, max: 72, minMessage: 'Au moins 8 caractères.', maxMessage: 'Au plus 72 caractères.'),
                 new Assert\Regex(pattern: '/(?=.*\p{L})(?=.*\d)/u', message: 'Le mot de passe doit contenir au moins une lettre et un chiffre.'),
             ],
+            'role' => [new Assert\Choice(choices: ['sportif', 'coach', 'gestionnaire'], message: 'Rôle invalide.')],
         ]));
         if (count($violations) > 0) {
             $details = [];
@@ -66,11 +71,19 @@ class AuthController extends ApiController
             ->setNom($input['nom'])
             ->setPrenom($input['prenom'])
             ->setEmail($input['email'])
-            ->setRole('sportif')
+            ->setRole($input['role'])
             ->setEmailConfirme(false);
         $user->setMotDePasse($hasher->hashPassword($user, $input['password']));
         $em->persist($user);
         $em->flush();
+
+        // Un coach a aussi sa fiche dans la table coach (tarif à 0 € au départ, modifiable ensuite).
+        if ($input['role'] === 'coach') {
+            $em->getConnection()->executeStatement(
+                'INSERT INTO coach (id_utilisateur, biographie, tarif_horaire) VALUES (?, NULL, 0)',
+                [$user->getId()],
+            );
+        }
 
         $lien = $signer->sign(
             $urls->generate('api_confirm', ['id' => $user->getId()], UrlGeneratorInterface::ABSOLUTE_URL),

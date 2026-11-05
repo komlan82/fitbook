@@ -10,7 +10,7 @@ const NOM = /^[\p{L}\p{M}' \-]{2,80}$/u;
   selector: 'app-inscription',
   imports: [ReactiveFormsModule, RouterLink],
   template: `
-    <h1>Créer un compte sportif</h1>
+    <h1>Créer un compte</h1>
     @if (succes(); as s) {
       <div class="carte etroit">
         <p class="succes" role="status">{{ s }}</p>
@@ -41,11 +41,19 @@ const NOM = /^[\p{L}\p{M}' \-]{2,80}$/u;
           }
         </label>
         <label>Mot de passe
-          <input type="password" formControlName="password" autocomplete="new-password" />
-          <span class="aide">10 caractères minimum, avec au moins une lettre et un chiffre.</span>
+         <input [type]="voirMdp() ? 'text' : 'password'" formControlName="password" autocomplete="new-password" />
+          <span class="aide">8 caractères minimum, avec au moins une lettre et un chiffre.</span>
           @if (form.controls.password.touched && form.controls.password.invalid) {
             <span class="aide erreur">Mot de passe trop faible.</span>
           }
+        </label>
+        <label class="petit"><input type="checkbox" (change)="voirMdp.set(!voirMdp())" /> Afficher le mot de passe</label>
+        <label>Je m'inscris comme
+          <select formControlName="role">
+            <option value="sportif">Sportif : je réserve des séances</option>
+            <option value="coach">Coach : je propose des séances</option>
+            <option value="gestionnaire">Gestionnaire : je gère une salle</option>
+          </select>
         </label>
         @if (erreur()) { <p class="erreur" role="alert">{{ erreur() }}</p> }
         <button class="btn" type="submit" [disabled]="envoi()">Créer mon compte</button>
@@ -54,20 +62,23 @@ const NOM = /^[\p{L}\p{M}' \-]{2,80}$/u;
     }
   `,
 })
+
 export class InscriptionPage {
   private readonly auth = inject(AuthService);
   protected readonly erreur = signal('');
   protected readonly succes = signal('');
   protected readonly lienDev = signal('');
   protected readonly envoi = signal(false);
+  protected readonly voirMdp = signal(false);
   protected readonly form = new FormGroup({
     nom: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.pattern(NOM)] }),
     prenom: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.pattern(NOM)] }),
     email: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.email, Validators.maxLength(180)] }),
     password: new FormControl('', {
       nonNullable: true,
-      validators: [Validators.required, Validators.minLength(10), Validators.maxLength(72), Validators.pattern(/^(?=.*\p{L})(?=.*\d).+$/u)],
+      validators: [Validators.required, Validators.minLength(8), Validators.maxLength(72), Validators.pattern(/^(?=.*\p{L})(?=.*\d).+$/u)],
     }),
+    role: new FormControl('sportif', { nonNullable: true, validators: [Validators.required, Validators.pattern(/^(sportif|coach|gestionnaire)$/)] }),
   });
 
   protected valider(): void {
@@ -76,7 +87,7 @@ export class InscriptionPage {
     const v = this.form.getRawValue();
     this.envoi.set(true);
     this.erreur.set('');
-    this.auth.inscription(v.nom, v.prenom, v.email, v.password).subscribe({
+    this.auth.inscription(v.nom, v.prenom, v.email, v.password, v.role).subscribe({
       next: (r) => { this.succes.set(r.message); this.lienDev.set(r.lienConfirmationDev ?? ''); },
       error: (e) => { this.erreur.set(messageErreur(e)); this.envoi.set(false); },
     });
