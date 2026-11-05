@@ -24,7 +24,6 @@ import { AuthService } from './core/auth.service';
           <a routerLink="/espace" routerLinkActive="actif">Mon espace</a>
         }
         <a routerLink="/contact" routerLinkActive="actif">Contact</a>
-        <a routerLink="/sauvegardes" routerLinkActive="actif">Sauvegardes</a>
       </nav>
       <div class="compte">
         @if (auth.user(); as u) {
@@ -40,9 +39,6 @@ import { AuthService } from './core/auth.service';
     <main class="page"><router-outlet /></main>
 
     <footer class="pied">
-      @if (sauvegarde(); as m) {
-        <p class="sauvegarde" role="status">💾 {{ m }}</p>
-      }
       <p class="petit">FitBook · projet UAA MI08 · Angular 21 + Symfony 7.4 + MySQL 8</p>
     </footer>
   `,
@@ -51,14 +47,8 @@ export class App implements OnInit {
   protected readonly auth = inject(AuthService);
   private readonly api = inject(ApiService);
   private readonly router = inject(Router);
-  protected readonly sauvegarde = signal<string | null>(null);
-
   ngOnInit(): void {
     this.auth.charger().subscribe();
-    this.api.sauvegardes().subscribe({
-      next: (j) => this.sauvegarde.set(j.message),
-      error: () => this.sauvegarde.set(null),
-    });
   }
 
   protected deconnexion(): void {
