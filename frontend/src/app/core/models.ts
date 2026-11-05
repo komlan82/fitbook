@@ -22,6 +22,7 @@ export interface SauvegardeJournal {
 }
 export interface UtilisateurAdmin { id: number; nom: string; prenom: string; email: string; role: string; emailConfirme: number | boolean; }
 export interface SalleGestionnaire { id: number; nom: string; ville: string; statutValidation: string; }
+export interface SalleAdmin { id: number; nom: string; adresse: string; ville: string; statutValidation: 'en_attente' | 'validee' | 'refusee'; gestionnaire: string; }
 export interface ReponseApi { code?: string; message?: string; }
 
 export interface SeanceCalendrier {

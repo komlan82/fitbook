@@ -31,6 +31,19 @@ class EspaceController extends ApiController
         ));
     }
 
+    #[Route('/api/admin/salles', name: 'api_admin_salles', methods: ['GET'])]
+    #[IsGranted('ROLE_ADMIN')]
+    public function sallesAdmin(Connection $db): JsonResponse
+    {
+        // Toutes les salles, celles à valider (en attente) en premier.
+        return new JsonResponse($db->fetchAllAssociative(
+            "SELECT s.id_salle AS id, s.nom, s.adresse, s.ville, s.statut_validation AS statutValidation,
+                    CONCAT(u.prenom, ' ', u.nom) AS gestionnaire
+             FROM salle s JOIN utilisateur u ON u.id_utilisateur = s.id_gestionnaire
+             ORDER BY FIELD(s.statut_validation, 'en_attente', 'validee', 'refusee'), s.nom",
+        ));
+    }
+
     #[Route('/api/admin/salles/{id}/validation', name: 'api_admin_validation', requirements: ['id' => '\d+'], methods: ['PATCH'])]
     #[IsGranted('ROLE_ADMIN')]
     public function valider(int $id, Request $request, Connection $db): JsonResponse

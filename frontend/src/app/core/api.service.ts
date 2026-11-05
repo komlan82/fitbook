@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { map } from 'rxjs';
 import {
   Avis, Disponibilite, Favori, FormSeance, OptionsCoach, Reservation, ReponseApi, SalleFiche, SalleGestionnaire,
-  SalleResume, SauvegardeJournal, Seance, SeanceCalendrier, SeanceCoach, UtilisateurAdmin,
+  SalleAdmin, SalleResume, SauvegardeJournal, Seance, SeanceCalendrier, SeanceCoach, UtilisateurAdmin,
 } from './models';
 
 /** "2026-11-07 10:00:00" (MySQL) -> "2026-11-07T10:00:00" (lisible par le DatePipe). */
@@ -69,6 +69,10 @@ export class ApiService {
     );
   }
   adminUtilisateurs() { return this.http.get<UtilisateurAdmin[]>('/api/admin/utilisateurs'); }
+  adminSalles() { return this.http.get<SalleAdmin[]>('/api/admin/salles'); }
+  validerSalle(id: number, statut: 'validee' | 'refusee') {
+    return this.http.patch<ReponseApi>(`/api/admin/salles/${id}/validation`, { statut });
+  }
   gestionnaireSalles() { return this.http.get<SalleGestionnaire[]>('/api/gestionnaire/salles'); }
 
   /** Calendrier public : séances ouvertes entre deux dates (début inclus, fin exclue, AAAA-MM-JJ). */
