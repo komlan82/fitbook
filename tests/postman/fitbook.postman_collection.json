@@ -2146,6 +2146,48 @@
      ]
     },
     {
+     "name": "Admin : ne peut pas créer de salle (réservé aux gestionnaires)",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/gestionnaire/salles",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "gestionnaire",
+        "salles"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"nom\": \"Salle Test Auto\", \"adresse\": \"Rue du Test 1\", \"ville\": \"Bruxelles\", \"codePostal\": \"1000\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 403', () => pm.response.to.have.status(403));"
+        ]
+       }
+      }
+     ]
+    },
+    {
      "name": "Déconnexion",
      "request": {
       "method": "POST",
@@ -2258,6 +2300,489 @@
         "exec": [
          "pm.test('Statut 200', () => pm.response.to.have.status(200));",
          "pm.test('4 salles', () => pm.expect(pm.response.json().length).to.eql(4));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Gestionnaire : réservations de ses salles",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/gestionnaire/reservations",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "gestionnaire",
+        "reservations"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         "pm.test('Réservations avec sportif et séance', () => { const l=pm.response.json(); pm.expect(l).to.be.an('array').that.is.not.empty; l.forEach(r => pm.expect(r).to.have.all.keys('salle','titre','dateDebut','sportif','statut','dateReservation')); });"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Gestionnaire : avis de ses salles",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/gestionnaire/avis",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "gestionnaire",
+        "avis"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         "pm.test('Avis avec salle et note', () => { const l=pm.response.json(); pm.expect(l).to.be.an('array').that.is.not.empty; l.forEach(a => pm.expect(a).to.have.all.keys('salle','note','commentaire','dateAvis','auteur')); });"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Gestionnaire : salle invalide refusée (validation backend)",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/gestionnaire/salles",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "gestionnaire",
+        "salles"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"nom\": \"\", \"adresse\": \"\", \"ville\": \"\", \"codePostal\": \"abc\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 422', () => pm.response.to.have.status(422));",
+         "pm.test('Erreurs par champ', () => pm.expect(pm.response.json().details).to.have.all.keys('nom','adresse','ville','codePostal'));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Gestionnaire : créer une salle",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/gestionnaire/salles",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "gestionnaire",
+        "salles"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"nom\": \"Salle Test Auto\", \"adresse\": \"Rue du Test 1\", \"ville\": \"Bruxelles\", \"codePostal\": \"1000\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 201', () => pm.response.to.have.status(201));",
+         "pm.test('Identifiant renvoyé', () => { const j=pm.response.json(); pm.expect(j.id).to.be.a('number'); pm.collectionVariables.set('idSalleTest', j.id); });"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Gestionnaire : la nouvelle salle est en attente de validation",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/gestionnaire/salles",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "gestionnaire",
+        "salles"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         "pm.test('Salle créée en attente', () => { const s=pm.response.json().find(x => x.id === pm.collectionVariables.get('idSalleTest')); pm.expect(s).to.exist; pm.expect(s.statutValidation).to.eql('en_attente'); });"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Salle en attente invisible côté public",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/salles",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "salles"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         "pm.test('Salle de test absente de la recherche publique', () => pm.expect(pm.response.text()).to.not.include('Salle Test Auto'));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Gestionnaire : modifier sa salle",
+     "request": {
+      "method": "PUT",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/gestionnaire/salles/{{idSalleTest}}",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "gestionnaire",
+        "salles",
+        "{{idSalleTest}}"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"nom\": \"Salle Test Auto 2\", \"adresse\": \"Rue du Test 1\", \"ville\": \"Bruxelles\", \"codePostal\": \"1000\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Gestionnaire : ne peut pas se valider lui-même (statut ignoré)",
+     "request": {
+      "method": "PUT",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/gestionnaire/salles/{{idSalleTest}}",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "gestionnaire",
+        "salles",
+        "{{idSalleTest}}"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"nom\": \"Salle Test Auto\", \"adresse\": \"Rue du Test 1\", \"ville\": \"Bruxelles\", \"codePostal\": \"1000\", \"statutValidation\": \"validee\", \"idGestionnaire\": 1}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Gestionnaire : le statut est resté en attente",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/gestionnaire/salles",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "gestionnaire",
+        "salles"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         "pm.test('Toujours en attente', () => { const s=pm.response.json().find(x => x.id === pm.collectionVariables.get('idSalleTest')); pm.expect(s.statutValidation).to.eql('en_attente'); });"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Gestionnaire : supprimer sa salle",
+     "request": {
+      "method": "DELETE",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/gestionnaire/salles/{{idSalleTest}}",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "gestionnaire",
+        "salles",
+        "{{idSalleTest}}"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Gestionnaire : suppression répétée -> introuvable",
+     "request": {
+      "method": "DELETE",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/gestionnaire/salles/{{idSalleTest}}",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "gestionnaire",
+        "salles",
+        "{{idSalleTest}}"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 404', () => pm.response.to.have.status(404));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Gestionnaire : salle avec séances non supprimable",
+     "request": {
+      "method": "DELETE",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/gestionnaire/salles/1",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "gestionnaire",
+        "salles",
+        "1"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 409', () => pm.response.to.have.status(409));"
         ]
        }
       }
@@ -3885,7 +4410,90 @@
        "script": {
         "type": "text/javascript",
         "exec": [
-         "pm.test('Statut 200', () => pm.response.to.have.status(200));"
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         "pm.test('Un nouveau gestionnaire n\\'a aucune salle', () => pm.expect(pm.response.json()).to.eql([]));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Gestionnaire inscrit : ne peut pas modifier la salle d'un autre",
+     "request": {
+      "method": "PUT",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/gestionnaire/salles/1",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "gestionnaire",
+        "salles",
+        "1"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"nom\": \"Salle Test Auto\", \"adresse\": \"Rue du Test 1\", \"ville\": \"Bruxelles\", \"codePostal\": \"1000\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 404', () => pm.response.to.have.status(404));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Gestionnaire inscrit : ne peut pas supprimer la salle d'un autre",
+     "request": {
+      "method": "DELETE",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/gestionnaire/salles/1",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "gestionnaire",
+        "salles",
+        "1"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 404', () => pm.response.to.have.status(404));"
         ]
        }
       }
@@ -4056,6 +4664,10 @@
   },
   {
    "key": "emailRole",
+   "value": ""
+  },
+  {
+   "key": "idSalleTest",
    "value": ""
   }
  ]
