@@ -1977,6 +1977,46 @@
      ]
     },
     {
+     "name": "Admin : liste des salles à valider",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/admin/salles",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "admin",
+        "salles"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         "pm.test('Chaque salle a un statut et un gestionnaire', () => { const l=pm.response.json(); pm.expect(l).to.be.an('array').that.is.not.empty; l.forEach(s => { pm.expect(s).to.have.all.keys('id','nom','adresse','ville','statutValidation','gestionnaire'); pm.expect(['en_attente','validee','refusee']).to.include(s.statutValidation); }); });",
+         "pm.test('Les salles en attente viennent en premier', () => { const l=pm.response.json().map(s=>s.statutValidation); const ordre={en_attente:0,validee:1,refusee:2}; for (let i=1;i<l.length;i++) pm.expect(ordre[l[i]]).to.be.at.least(ordre[l[i-1]]); });"
+        ]
+       }
+      }
+     ]
+    },
+    {
      "name": "Admin : ne peut pas réserver",
      "request": {
       "method": "POST",
@@ -2056,6 +2096,50 @@
         "type": "text/javascript",
         "exec": [
          "pm.test('Statut 422', () => pm.response.to.have.status(422));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Admin : valider une salle inexistante",
+     "request": {
+      "method": "PATCH",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/admin/salles/999999/validation",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "admin",
+        "salles",
+        "999999",
+        "validation"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"statut\": \"validee\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 404', () => pm.response.to.have.status(404));"
         ]
        }
       }
@@ -2202,6 +2286,44 @@
         "api",
         "admin",
         "utilisateurs"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 403', () => pm.response.to.have.status(403));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Gestionnaire : interdit pour la liste des salles admin",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/admin/salles",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "admin",
+        "salles"
        ]
       }
      },
