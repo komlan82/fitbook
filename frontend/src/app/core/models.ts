@@ -21,7 +21,10 @@ export interface SauvegardeJournal {
   sauvegardes: { numero: number; fichier: string; tailleOctets: number | null; date: string; statut: string }[];
 }
 export interface UtilisateurAdmin { id: number; nom: string; prenom: string; email: string; role: string; emailConfirme: number | boolean; }
-export interface SalleGestionnaire { id: number; nom: string; ville: string; statutValidation: string; }
+export interface SalleGestionnaire { id: number; nom: string; adresse: string; ville: string; codePostal: string; statutValidation: 'en_attente' | 'validee' | 'refusee'; }
+export interface FormSalle { nom: string; adresse: string; ville: string; codePostal: string; }
+export interface ReservationGestionnaire { salle: string; titre: string; dateDebut: string; sportif: string; statut: 'confirmee' | 'en_attente' | 'annulee'; dateReservation: string; }
+export interface AvisGestionnaire { salle: string; note: number; commentaire: string | null; dateAvis: string; auteur: string; }
 export interface SalleAdmin { id: number; nom: string; adresse: string; ville: string; statutValidation: 'en_attente' | 'validee' | 'refusee'; gestionnaire: string; }
 export interface ReponseApi { code?: string; message?: string; }
 

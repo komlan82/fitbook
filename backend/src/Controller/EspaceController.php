@@ -16,7 +16,7 @@ class EspaceController extends ApiController
     public function sallesDuGestionnaire(Connection $db): JsonResponse
     {
         return new JsonResponse($db->fetchAllAssociative(
-            'SELECT id_salle AS id, nom, ville, statut_validation AS statutValidation FROM salle WHERE id_gestionnaire = :u ORDER BY nom',
+            'SELECT id_salle AS id, nom, adresse, ville, code_postal AS codePostal, statut_validation AS statutValidation FROM salle WHERE id_gestionnaire = :u ORDER BY nom',
             ['u' => $this->userId()],
         ));
     }

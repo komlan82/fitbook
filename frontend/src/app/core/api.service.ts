@@ -2,8 +2,8 @@ import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http'
 import { Injectable, inject } from '@angular/core';
 import { map } from 'rxjs';
 import {
-  Avis, Disponibilite, Favori, FormSeance, OptionsCoach, Reservation, ReponseApi, SalleFiche, SalleGestionnaire,
-  SalleAdmin, SalleResume, SauvegardeJournal, Seance, SeanceCalendrier, SeanceCoach, UtilisateurAdmin,
+  Avis, AvisGestionnaire, Disponibilite, Favori, FormSalle, FormSeance, OptionsCoach, Reservation, ReponseApi, SalleFiche, SalleGestionnaire,
+  ReservationGestionnaire, SalleAdmin, SalleResume, SauvegardeJournal, Seance, SeanceCalendrier, SeanceCoach, UtilisateurAdmin,
 } from './models';
 
 /** "2026-11-07 10:00:00" (MySQL) -> "2026-11-07T10:00:00" (lisible par le DatePipe). */
@@ -74,6 +74,19 @@ export class ApiService {
     return this.http.patch<ReponseApi>(`/api/admin/salles/${id}/validation`, { statut });
   }
   gestionnaireSalles() { return this.http.get<SalleGestionnaire[]>('/api/gestionnaire/salles'); }
+  creerSalle(f: FormSalle) { return this.http.post<ReponseApi>('/api/gestionnaire/salles', f); }
+  modifierSalle(id: number, f: FormSalle) { return this.http.put<ReponseApi>(`/api/gestionnaire/salles/${id}`, f); }
+  supprimerSalle(id: number) { return this.http.delete<ReponseApi>(`/api/gestionnaire/salles/${id}`); }
+  gestionnaireReservations() {
+    return this.http.get<ReservationGestionnaire[]>('/api/gestionnaire/reservations').pipe(
+      map((l) => l.map((r) => ({ ...r, dateDebut: iso(r.dateDebut), dateReservation: iso(r.dateReservation) }))),
+    );
+  }
+  gestionnaireAvis() {
+    return this.http.get<AvisGestionnaire[]>('/api/gestionnaire/avis').pipe(
+      map((l) => l.map((a) => ({ ...a, dateAvis: iso(a.dateAvis) }))),
+    );
+  }
 
   /** Calendrier public : séances ouvertes entre deux dates (début inclus, fin exclue, AAAA-MM-JJ). */
   calendrier(debut: string, fin: string) {
