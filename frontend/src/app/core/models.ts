@@ -13,7 +13,7 @@ export interface SalleFiche extends SalleResume { seances: Seance[]; avis: Avis[
 
 export interface Reservation {
   idSeance: number; statut: 'confirmee' | 'en_attente' | 'annulee'; dateReservation: string;
-  titre: string; dateDebut: string; salle: string; ville: string;
+  titre: string; dateDebut: string; salle: string; ville: string; idSalle: number; idCoach: number;
 }
 export interface Favori { id: number; nom: string; ville: string; dateAjout: string; }
 export interface SauvegardeJournal {
@@ -44,3 +44,4 @@ export interface FormSeance {
 }
 export interface OptionsCoach { salles: { id: number; nom: string; ville: string }[]; disciplines: { id: number; libelle: string }[]; }
 export interface Disponibilite { id: number; dateDebut: string; dateFin: string; }
+export interface MonAvis { id: number; cible: string; type: 'salle' | 'coach'; note: number; commentaire: string | null; dateAvis: string; visible: number | boolean; }

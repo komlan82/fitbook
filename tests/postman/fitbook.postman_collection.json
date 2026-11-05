@@ -5905,6 +5905,360 @@
      ]
     }
    ]
+  },
+  {
+   "name": "11 - Espace sportif (avis, profil)",
+   "item": [
+    {
+     "name": "Connexion lea@fitbook.test -> 200",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/login",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "login"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"email\": \"lea@fitbook.test\", \"password\": \"Fitbook2026!\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         ""
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Sportif : ses réservations contiennent salle et coach",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/reservations",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "reservations"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         "pm.test('idSalle et idCoach présents', () => { const l=pm.response.json(); pm.expect(l).to.be.an('array'); l.forEach(r => { pm.expect(r).to.have.property('idSalle'); pm.expect(r).to.have.property('idCoach'); }); });"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Sportif : liste de ses avis",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/mes-avis",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "mes-avis"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         "pm.test('Avis bien formés', () => { const l=pm.response.json(); pm.expect(l).to.be.an('array'); l.forEach(a => pm.expect(a).to.have.all.keys('id','type','cible','note','commentaire','dateAvis','visible')); });"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Sportif : profil invalide refusé",
+     "request": {
+      "method": "PUT",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/me",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "me"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"nom\": \"\", \"prenom\": \"L\\u00e9a\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 422', () => pm.response.to.have.status(422));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Déconnexion",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/logout",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "logout"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Connexion gestionnaire@fitbook.test -> 200",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/login",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "login"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"email\": \"gestionnaire@fitbook.test\", \"password\": \"Fitbook2026!\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         ""
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Gestionnaire : Mes avis (sportif) interdit",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/mes-avis",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "mes-avis"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 403', () => pm.response.to.have.status(403));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Déconnexion",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/logout",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "logout"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Anonyme : Mes avis -> 401",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/mes-avis",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "mes-avis"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 401', () => pm.response.to.have.status(401));"
+        ]
+       }
+      }
+     ]
+    }
+   ]
   }
  ],
  "variable": [
@@ -5934,6 +6288,14 @@
   },
   {
    "key": "idSalleTest",
+   "value": ""
+  },
+  {
+   "key": "libelleDiscipline",
+   "value": ""
+  },
+  {
+   "key": "idDisciplineTest",
    "value": ""
   },
   {
