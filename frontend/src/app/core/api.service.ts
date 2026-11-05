@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { map } from 'rxjs';
 import {
   Avis, AvisGestionnaire, Disponibilite, Favori, FormSalle, FormSeance, OptionsCoach, Reservation, ReponseApi, SalleFiche, SalleGestionnaire,
-  ReservationGestionnaire, SalleAdmin, SalleResume, SauvegardeJournal, Seance, SeanceCalendrier, SeanceCoach, UtilisateurAdmin,
+  AvisSignale, Discipline, ReservationGestionnaire, SalleAdmin, SalleResume, SauvegardeJournal, Seance, SeanceCalendrier, SeanceCoach, UtilisateurAdmin,
 } from './models';
 
 /** "2026-11-07 10:00:00" (MySQL) -> "2026-11-07T10:00:00" (lisible par le DatePipe). */
@@ -69,6 +69,15 @@ export class ApiService {
     );
   }
   adminUtilisateurs() { return this.http.get<UtilisateurAdmin[]>('/api/admin/utilisateurs'); }
+  signalerAvis(id: number) { return this.http.post<ReponseApi>(`/api/avis/${id}/signalement`, {}); }
+  adminAvisSignales() { return this.http.get<AvisSignale[]>('/api/admin/avis-signales'); }
+  modererAvis(id: number, decision: 'masquer' | 'conserver') {
+    return this.http.patch<ReponseApi>(`/api/admin/avis/${id}/moderation`, { decision });
+  }
+  adminDisciplines() { return this.http.get<Discipline[]>('/api/admin/disciplines'); }
+  creerDiscipline(libelle: string) { return this.http.post<ReponseApi>('/api/admin/disciplines', { libelle }); }
+  renommerDiscipline(id: number, libelle: string) { return this.http.put<ReponseApi>(`/api/admin/disciplines/${id}`, { libelle }); }
+  supprimerDiscipline(id: number) { return this.http.delete<ReponseApi>(`/api/admin/disciplines/${id}`); }
   adminSalles() { return this.http.get<SalleAdmin[]>('/api/admin/salles'); }
   validerSalle(id: number, statut: 'validee' | 'refusee') {
     return this.http.patch<ReponseApi>(`/api/admin/salles/${id}/validation`, { statut });

@@ -1,13 +1,15 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { DatePipe, NgTemplateOutlet } from '@angular/common';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ApiService, messageErreur } from '../core/api.service';
 import { AuthService } from '../core/auth.service';
-import { SalleAdmin, UtilisateurAdmin } from '../core/models';
+import { AvisSignale, Discipline, SalleAdmin, UtilisateurAdmin } from '../core/models';
 import { GestionnaireSection } from './gestionnaire-section';
 
 @Component({
   selector: 'app-espace',
-  imports: [GestionnaireSection, RouterLink],
+  imports: [GestionnaireSection, RouterLink, ReactiveFormsModule, DatePipe, NgTemplateOutlet],
   styles: `
     .espace { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 1.5rem; align-items: start; }
     .menu { padding: .7rem; display: grid; gap: .2rem; }
@@ -28,6 +30,10 @@ import { GestionnaireSection } from './gestionnaire-section';
     .admin-table .actions .btn { padding: .4rem .8rem; font-size: .9rem; }
     .admin-table .salle { min-width: 150px; }
     .admin-table .gest { white-space: nowrap; }
+    .avis-ligne { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; margin-bottom: .8rem; }
+    .avis-ligne p { margin: .3rem 0 0; }
+    .discipline-form { display: flex; gap: .6rem; flex-wrap: wrap; align-items: flex-end; margin-top: 1rem; max-width: 520px; }
+    .discipline-form label { flex: 1; min-width: 200px; }
     @media (max-width: 800px) { .espace { grid-template-columns: 1fr; } .menu { grid-auto-flow: column; overflow-x: auto; } }
   `,
   template: `
@@ -36,7 +42,9 @@ import { GestionnaireSection } from './gestionnaire-section';
         <aside class="carte menu" aria-label="Menu de l'espace">
           @if (auth.user()?.role === 'admin') {
             <button type="button" [class.actif]="section() === 'salles'" (click)="section.set('salles')">Salles à valider</button>
+            <button type="button" [class.actif]="section() === 'avis'" (click)="section.set('avis')">Avis à modérer</button>
             <button type="button" [class.actif]="section() === 'utilisateurs'" (click)="section.set('utilisateurs')">Utilisateurs</button>
+            <button type="button" [class.actif]="section() === 'disciplines'" (click)="section.set('disciplines')">Disciplines</button>
           } @else {
             <button type="button" [class.actif]="section() === 'salles'" (click)="section.set('salles')">Mes salles</button>
             <a routerLink="/calendrier">Calendrier</a>
@@ -52,10 +60,12 @@ import { GestionnaireSection } from './gestionnaire-section';
             <h2 class="titre">Administration</h2>
             <div class="chiffres">
               <div class="carte chiffre"><span>Salles en attente</span><strong>{{ nbEnAttente() }}</strong></div>
+              <div class="carte chiffre"><span>Avis signalés</span><strong>{{ avisSignales().length }}</strong></div>
               <div class="carte chiffre"><span>Utilisateurs actifs</span><strong>{{ nbActifs() }}</strong></div>
             </div>
 
-            @if (section() === 'utilisateurs') {
+            @switch (section()) {
+              @case ('utilisateurs') {
               <h3>Utilisateurs de la plateforme</h3>
               <table class="tableau">
                 <thead><tr><th>Nom</th><th>Email</th><th>Rôle</th><th>Email confirmé</th></tr></thead>
@@ -65,7 +75,45 @@ import { GestionnaireSection } from './gestionnaire-section';
                   }
                 </tbody>
               </table>
-            } @else {
+              }
+              @case ('avis') {
+                <h3>Avis signalés</h3>
+                <ng-container [ngTemplateOutlet]="listeAvis" />
+              }
+              @case ('disciplines') {
+                <h3>Disciplines</h3>
+                <table class="tableau admin-table">
+                  <thead><tr><th>Discipline</th><th>Séances</th><th>Actions</th></tr></thead>
+                  <tbody>
+                    @for (d of disciplines(); track d.id) {
+                      <tr>
+                        <td class="nom">{{ d.libelle }}</td>
+                        <td>{{ d.nbSeances }}</td>
+                        <td><div class="actions">
+                          <button type="button" class="btn btn-contour" (click)="modifierDiscipline(d)">Renommer</button>
+                          @if (disciplineASupprimer() === d.id) {
+                            <button type="button" class="btn" (click)="supprimerDiscipline(d)">Confirmer la suppression</button>
+                            <button type="button" class="btn btn-contour" (click)="disciplineASupprimer.set(null)">Annuler</button>
+                          } @else {
+                            <button type="button" class="btn btn-contour" (click)="disciplineASupprimer.set(d.id)">Supprimer</button>
+                          }
+                        </div></td>
+                      </tr>
+                    } @empty {
+                      <tr><td colspan="3">Aucune discipline.</td></tr>
+                    }
+                  </tbody>
+                </table>
+                <form class="discipline-form" (ngSubmit)="enregistrerDiscipline()">
+                  <label>{{ disciplineEnEdition() === null ? 'Nouvelle discipline' : 'Nouveau nom' }}
+                    <input type="text" [formControl]="libelleDiscipline" maxlength="60" />
+                    @if (libelleDiscipline.touched && libelleDiscipline.invalid) { <span class="aide erreur">Le nom comporte 2 à 60 caractères.</span> }
+                  </label>
+                  <button class="btn" type="submit">{{ disciplineEnEdition() === null ? 'Ajouter' : 'Enregistrer' }}</button>
+                  @if (disciplineEnEdition() !== null) { <button class="btn btn-contour" type="button" (click)="annulerDiscipline()">Annuler</button> }
+                </form>
+              }
+              @default {
               <h3>Salles à valider</h3>
               <table class="tableau admin-table">
                 <thead><tr><th>Salle</th><th>Gestionnaire</th><th>Ville</th><th>Statut</th><th>Actions</th></tr></thead>
@@ -90,6 +138,10 @@ import { GestionnaireSection } from './gestionnaire-section';
                   }
                 </tbody>
               </table>
+
+                <h3>Avis signalés</h3>
+                <ng-container [ngTemplateOutlet]="listeAvis" />
+              }
             }
           } @else {
             <app-gestionnaire-section [section]="section()" />
@@ -100,6 +152,22 @@ import { GestionnaireSection } from './gestionnaire-section';
       <h1>Mon espace</h1>
       <p>Cet espace est réservé aux gestionnaires de salle et aux administrateurs.</p>
     }
+    <ng-template #listeAvis>
+      @for (a of avisSignales(); track a.id) {
+        <div class="carte avis-ligne">
+          <div>
+            <strong>{{ a.auteur }} · {{ a.cible }}</strong> · <span class="note">★ {{ a.note }}</span> <span class="petit">· {{ a.dateAvis | date: 'd MMM y' }}</span>
+            <p>{{ a.commentaire || '(sans commentaire)' }}</p>
+          </div>
+          <div class="actions">
+            <button type="button" class="btn btn-contour" (click)="moderer(a, 'masquer')">Masquer</button>
+            <button type="button" class="btn" (click)="moderer(a, 'conserver')">Conserver</button>
+          </div>
+        </div>
+      } @empty {
+        <p>Aucun avis signalé pour le moment.</p>
+      }
+    </ng-template>
   `,
 })
 export class EspacePage implements OnInit {
@@ -108,6 +176,11 @@ export class EspacePage implements OnInit {
   protected readonly section = signal('salles');
   protected readonly utilisateurs = signal<UtilisateurAdmin[]>([]);
   protected readonly sallesAdmin = signal<SalleAdmin[]>([]);
+  protected readonly avisSignales = signal<AvisSignale[]>([]);
+  protected readonly disciplines = signal<Discipline[]>([]);
+  protected readonly disciplineEnEdition = signal<number | null>(null);
+  protected readonly disciplineASupprimer = signal<number | null>(null);
+  protected readonly libelleDiscipline = new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.minLength(2), Validators.maxLength(60)] });
   protected readonly message = signal('');
   protected readonly erreur = signal('');
 
@@ -130,6 +203,59 @@ export class EspacePage implements OnInit {
     });
   }
 
+  protected moderer(avis: AvisSignale, decision: 'masquer' | 'conserver'): void {
+    this.erreur.set('');
+    this.message.set('');
+    this.api.modererAvis(avis.id, decision).subscribe({
+      next: (r) => { this.message.set(r.message ?? 'Fait.'); this.chargerAvisSignales(); },
+      error: (e) => this.erreur.set(messageErreur(e)),
+    });
+  }
+
+  protected modifierDiscipline(d: Discipline): void {
+    this.message.set('');
+    this.erreur.set('');
+    this.disciplineASupprimer.set(null);
+    this.disciplineEnEdition.set(d.id);
+    this.libelleDiscipline.setValue(d.libelle);
+  }
+
+  protected annulerDiscipline(): void {
+    this.disciplineEnEdition.set(null);
+    this.libelleDiscipline.reset('');
+  }
+
+  protected enregistrerDiscipline(): void {
+    this.libelleDiscipline.markAsTouched();
+    if (this.libelleDiscipline.invalid) return;
+    const libelle = this.libelleDiscipline.value.trim();
+    const id = this.disciplineEnEdition();
+    this.erreur.set('');
+    this.message.set('');
+    const appel = id === null ? this.api.creerDiscipline(libelle) : this.api.renommerDiscipline(id, libelle);
+    appel.subscribe({
+      next: (r) => { this.message.set(r.message ?? 'Enregistré.'); this.annulerDiscipline(); this.chargerDisciplines(); },
+      error: (e) => this.erreur.set(messageErreur(e)),
+    });
+  }
+
+  protected supprimerDiscipline(d: Discipline): void {
+    this.erreur.set('');
+    this.message.set('');
+    this.api.supprimerDiscipline(d.id).subscribe({
+      next: (r) => { this.message.set(r.message ?? 'Discipline supprimée.'); this.disciplineASupprimer.set(null); this.chargerDisciplines(); },
+      error: (e) => { this.erreur.set(messageErreur(e)); this.disciplineASupprimer.set(null); },
+    });
+  }
+
+  private chargerAvisSignales(): void {
+    this.api.adminAvisSignales().subscribe({ next: (l) => this.avisSignales.set(l), error: (e) => this.erreur.set(messageErreur(e)) });
+  }
+
+  private chargerDisciplines(): void {
+    this.api.adminDisciplines().subscribe({ next: (l) => this.disciplines.set(l), error: (e) => this.erreur.set(messageErreur(e)) });
+  }
+
   private chargerSallesAdmin(): void {
     this.api.adminSalles().subscribe({ next: (l) => this.sallesAdmin.set(l), error: (e) => this.erreur.set(messageErreur(e)) });
   }
@@ -137,6 +263,8 @@ export class EspacePage implements OnInit {
   ngOnInit(): void {
     if (this.auth.user()?.role === 'admin') {
       this.chargerSallesAdmin();
+      this.chargerAvisSignales();
+      this.chargerDisciplines();
       this.api.adminUtilisateurs().subscribe({ next: (l) => this.utilisateurs.set(l), error: (e) => this.erreur.set(messageErreur(e)) });
     }
   }

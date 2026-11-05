@@ -70,6 +70,9 @@ import { SalleFiche } from '../core/models';
               <span class="note">{{ etoiles(a.note) }}</span></p>
             <p>{{ a.commentaire }}</p>
             <p class="meta">{{ a.dateAvis | date: 'd MMMM y' }}</p>
+            @if (auth.estSportif()) {
+              <button type="button" class="btn btn-contour" (click)="signaler(a.id)">Signaler cet avis</button>
+            }
           </article>
         } @empty {
           <p>Aucun avis pour le moment.</p>
@@ -145,6 +148,13 @@ export class FicheSallePage {
     const appel = this.favori() ? this.api.retirerFavori(id) : this.api.ajouterFavori(id);
     appel.subscribe({
       next: () => this.favori.update((v) => !v),
+      error: (e) => this.afficher(messageErreur(e), false),
+    });
+  }
+
+  protected signaler(idAvis: number): void {
+    this.api.signalerAvis(idAvis).subscribe({
+      next: (r) => this.afficher(r.message ?? 'Avis signalé.', true),
       error: (e) => this.afficher(messageErreur(e), false),
     });
   }
