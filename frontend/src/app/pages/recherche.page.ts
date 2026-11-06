@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ApiService, messageErreur } from '../core/api.service';
 import { CoachResume, SalleResume, SeanceCalendrier } from '../core/models';
 
@@ -177,6 +177,8 @@ const jourLocal = (d: Date): string => `${d.getFullYear()}-${pad(d.getMonth() + 
 })
 export class RecherchePage implements OnInit {
   private readonly api = inject(ApiService);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   protected readonly disciplines = ['Yoga', 'Pilates', 'Boxe', 'Musculation', 'Cardio'];
   protected readonly onglets: { cle: Onglet; libelle: string }[] = [
     { cle: 'salles', libelle: 'Salles' }, { cle: 'coachs', libelle: 'Coachs' }, { cle: 'seances', libelle: 'Séances' },
@@ -244,11 +246,21 @@ export class RecherchePage implements OnInit {
   protected readonly pageCoachs = computed(() => this.tranche(this.coachsFiltres()));
   protected readonly pageSeances = computed(() => this.tranche(this.seancesFiltrees()));
 
-  ngOnInit(): void { this.rafraichir(); }
+  ngOnInit(): void {
+    // L'onglet vit dans l'adresse (?onglet=coachs) : l'en-tête et la page restent synchronisés.
+    this.route.queryParamMap.subscribe((q) => {
+      const o = q.get('onglet');
+      this.onglet.set(o === 'coachs' || o === 'seances' ? o : 'salles');
+      this.page.set(1);
+    });
+    this.rafraichir();
+  }
 
   protected prenom(nomComplet: string): string { return nomComplet.split(' ')[0]; }
   protected changer(action: () => void): void { action(); this.page.set(1); }
-  protected choisirOnglet(o: Onglet): void { this.onglet.set(o); this.page.set(1); }
+  protected choisirOnglet(o: Onglet): void {
+    this.router.navigate([], { relativeTo: this.route, queryParams: { onglet: o === 'salles' ? null : o }, queryParamsHandling: 'merge' });
+  }
 
   /** Début et fin (en ms) de « cette semaine » ou « ce week-end » ; [0, 0] si aucun filtre. */
   private fenetre(d: Dispo): [number, number] {
