@@ -67,11 +67,25 @@ import { GestionnaireSection } from './gestionnaire-section';
             @switch (section()) {
               @case ('utilisateurs') {
               <h3>Utilisateurs de la plateforme</h3>
-              <table class="tableau">
-                <thead><tr><th>Nom</th><th>Email</th><th>Rôle</th><th>Email confirmé</th></tr></thead>
+              <table class="tableau admin-table">
+                <thead><tr><th>Nom</th><th>Email</th><th>Rôle</th><th>Email confirmé</th><th>Actions</th></tr></thead>
                 <tbody>
                   @for (u of utilisateurs(); track u.id) {
-                    <tr><td class="nom">{{ u.prenom }} {{ u.nom }}</td><td>{{ u.email }}</td><td>{{ u.role }}</td><td>{{ u.emailConfirme ? 'oui' : 'non' }}</td></tr>
+                    <tr>
+                      <td class="nom">{{ u.prenom }} {{ u.nom }}</td><td>{{ u.email }}</td><td>{{ u.role }}</td><td>{{ u.emailConfirme ? 'oui' : 'non' }}</td>
+                      <td>
+                        @if (u.role !== 'admin') {
+                          <div class="actions">
+                            @if (utilisateurASupprimer() === u.id) {
+                              <button type="button" class="btn" (click)="supprimerUtilisateur(u)">Confirmer la suppression</button>
+                              <button type="button" class="btn btn-contour" (click)="utilisateurASupprimer.set(null)">Annuler</button>
+                            } @else {
+                              <button type="button" class="btn btn-contour" (click)="utilisateurASupprimer.set(u.id)">Supprimer</button>
+                            }
+                          </div>
+                        }
+                      </td>
+                    </tr>
                   }
                 </tbody>
               </table>
@@ -178,6 +192,7 @@ export class EspacePage implements OnInit {
   protected readonly sallesAdmin = signal<SalleAdmin[]>([]);
   protected readonly avisSignales = signal<AvisSignale[]>([]);
   protected readonly disciplines = signal<Discipline[]>([]);
+  protected readonly utilisateurASupprimer = signal<number | null>(null);
   protected readonly disciplineEnEdition = signal<number | null>(null);
   protected readonly disciplineASupprimer = signal<number | null>(null);
   protected readonly libelleDiscipline = new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.minLength(2), Validators.maxLength(60)] });
@@ -201,6 +216,19 @@ export class EspacePage implements OnInit {
       },
       error: (e) => this.erreur.set(messageErreur(e)),
     });
+  }
+
+  protected supprimerUtilisateur(u: UtilisateurAdmin): void {
+    this.erreur.set('');
+    this.message.set('');
+    this.api.supprimerUtilisateur(u.id).subscribe({
+      next: (r) => { this.message.set(r.message ?? 'Utilisateur supprimé.'); this.utilisateurASupprimer.set(null); this.chargerUtilisateurs(); },
+      error: (er) => { this.erreur.set(messageErreur(er)); this.utilisateurASupprimer.set(null); },
+    });
+  }
+
+  private chargerUtilisateurs(): void {
+    this.api.adminUtilisateurs().subscribe({ next: (l) => this.utilisateurs.set(l), error: (e) => this.erreur.set(messageErreur(e)) });
   }
 
   protected moderer(avis: AvisSignale, decision: 'masquer' | 'conserver'): void {
@@ -265,7 +293,7 @@ export class EspacePage implements OnInit {
       this.chargerSallesAdmin();
       this.chargerAvisSignales();
       this.chargerDisciplines();
-      this.api.adminUtilisateurs().subscribe({ next: (l) => this.utilisateurs.set(l), error: (e) => this.erreur.set(messageErreur(e)) });
+      this.chargerUtilisateurs();
     }
   }
 }

@@ -76,6 +76,7 @@ export class ApiService {
       map((j) => ({ ...j, sauvegardes: j.sauvegardes.map((s) => ({ ...s, date: iso(s.date) })) })),
     );
   }
+  supprimerUtilisateur(id: number) { return this.http.delete<ReponseApi>(`/api/admin/utilisateurs/${id}`); }
   adminUtilisateurs() { return this.http.get<UtilisateurAdmin[]>('/api/admin/utilisateurs'); }
   signalerAvis(id: number) { return this.http.post<ReponseApi>(`/api/avis/${id}/signalement`, {}); }
   adminAvisSignales() { return this.http.get<AvisSignale[]>('/api/admin/avis-signales'); }
