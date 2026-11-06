@@ -12,128 +12,339 @@
     "Inscription": {
       "description": "Corps de POST /api/register. Le rôle « admin » est refusé par le serveur.",
       "type": "object",
-      "required": ["nom", "prenom", "email", "password"],
+      "required": [
+        "nom",
+        "prenom",
+        "email",
+        "password"
+      ],
       "additionalProperties": false,
       "properties": {
-        "nom": { "type": "string", "minLength": 2, "maxLength": 80, "description": "Lettres, espaces, apostrophes et tirets uniquement." },
-        "prenom": { "type": "string", "minLength": 2, "maxLength": 80, "description": "Lettres, espaces, apostrophes et tirets uniquement." },
-        "email": { "type": "string", "format": "email", "maxLength": 180 },
-        "password": { "type": "string", "minLength": 8, "maxLength": 72, "description": "Au moins une lettre et un chiffre." },
-        "role": { "enum": ["sportif", "coach", "gestionnaire"], "default": "sportif" }
+        "nom": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 80,
+          "description": "Lettres, espaces, apostrophes et tirets uniquement."
+        },
+        "prenom": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 80,
+          "description": "Lettres, espaces, apostrophes et tirets uniquement."
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "maxLength": 180
+        },
+        "password": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 72,
+          "description": "Au moins une lettre et un chiffre.",
+          "pattern": "^(?=.*\\p{L})(?=.*\\d).+$"
+        },
+        "role": {
+          "enum": [
+            "sportif",
+            "coach",
+            "gestionnaire"
+          ],
+          "default": "sportif"
+        }
       }
     },
     "Connexion": {
       "description": "Corps de POST /api/login.",
       "type": "object",
-      "required": ["email", "password"],
+      "required": [
+        "email",
+        "password"
+      ],
       "properties": {
-        "email": { "type": "string", "format": "email" },
-        "password": { "type": "string" }
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "password": {
+          "type": "string"
+        }
       }
     },
     "Utilisateur": {
       "description": "Réponse de POST /api/login et de GET /api/me. Le mot de passe n'est jamais renvoyé.",
       "type": "object",
-      "required": ["id", "nom", "prenom", "email", "role"],
+      "required": [
+        "id",
+        "nom",
+        "prenom",
+        "email",
+        "role"
+      ],
       "additionalProperties": false,
       "properties": {
-        "id": { "type": "integer", "minimum": 1 },
-        "nom": { "type": "string" },
-        "prenom": { "type": "string" },
-        "email": { "type": "string", "format": "email" },
-        "role": { "enum": ["sportif", "coach", "gestionnaire", "admin"] }
+        "id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "nom": {
+          "type": "string"
+        },
+        "prenom": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "role": {
+          "enum": [
+            "sportif",
+            "coach",
+            "gestionnaire",
+            "admin"
+          ]
+        }
       }
     },
     "ErreurApi": {
       "description": "Réponse d'erreur homogène (statuts 400, 401, 403, 404, 409, 422).",
       "type": "object",
-      "required": ["erreur"],
+      "required": [
+        "erreur"
+      ],
       "properties": {
-        "erreur": { "type": "string" },
-        "details": { "type": "object", "additionalProperties": { "type": "string" }, "description": "Message par champ invalide." }
+        "erreur": {
+          "type": "string"
+        },
+        "details": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Message par champ invalide."
+        }
       }
     },
     "ReponseApi": {
       "description": "Réponse des actions de réservation et d'annulation.",
       "type": "object",
       "properties": {
-        "code": { "type": "string" },
-        "message": { "type": "string" }
+        "code": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
       }
     },
     "ReservationDemande": {
       "description": "Corps de POST /api/reservations.",
       "type": "object",
-      "required": ["idSeance"],
+      "required": [
+        "idSeance"
+      ],
       "additionalProperties": false,
-      "properties": { "idSeance": { "type": "integer", "minimum": 1 } }
+      "properties": {
+        "idSeance": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
     },
     "Reservation": {
       "description": "Élément de la réponse de GET /api/reservations.",
       "type": "object",
-      "required": ["idSeance", "statut", "dateReservation", "titre", "dateDebut", "salle", "ville"],
+      "required": [
+        "idSeance",
+        "statut",
+        "dateReservation",
+        "titre",
+        "dateDebut",
+        "salle",
+        "ville"
+      ],
       "properties": {
-        "idSeance": { "type": "integer", "minimum": 1 },
-        "statut": { "enum": ["confirmee", "en_attente", "annulee"] },
-        "dateReservation": { "$ref": "#/$defs/DateHeure" },
-        "titre": { "type": "string" },
-        "dateDebut": { "$ref": "#/$defs/DateHeure" },
-        "salle": { "type": "string" },
-        "ville": { "type": "string" }
+        "idSeance": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "statut": {
+          "enum": [
+            "confirmee",
+            "en_attente",
+            "annulee"
+          ]
+        },
+        "dateReservation": {
+          "$ref": "#/$defs/DateHeure"
+        },
+        "titre": {
+          "type": "string"
+        },
+        "dateDebut": {
+          "$ref": "#/$defs/DateHeure"
+        },
+        "salle": {
+          "type": "string"
+        },
+        "ville": {
+          "type": "string"
+        }
       }
     },
     "Seance": {
       "description": "Séance affichée sur la fiche d'une salle.",
       "type": "object",
-      "required": ["id", "titre", "dateDebut", "dateFin", "prix", "placesMax", "discipline", "coach", "placesRestantes"],
+      "required": [
+        "id",
+        "titre",
+        "dateDebut",
+        "dateFin",
+        "prix",
+        "placesMax",
+        "discipline",
+        "coach",
+        "placesRestantes"
+      ],
       "properties": {
-        "id": { "type": "integer", "minimum": 1 },
-        "titre": { "type": "string" },
-        "dateDebut": { "$ref": "#/$defs/DateHeure" },
-        "dateFin": { "$ref": "#/$defs/DateHeure" },
-        "prix": { "type": "string", "pattern": "^\\d+(\\.\\d{1,2})?$" },
-        "placesMax": { "type": "integer", "minimum": 1 },
-        "discipline": { "type": "string" },
-        "coach": { "type": "string" },
-        "placesRestantes": { "type": "integer", "minimum": 0 }
+        "id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "titre": {
+          "type": "string"
+        },
+        "dateDebut": {
+          "$ref": "#/$defs/DateHeure"
+        },
+        "dateFin": {
+          "$ref": "#/$defs/DateHeure"
+        },
+        "prix": {
+          "type": "string",
+          "pattern": "^\\d+(\\.\\d{1,2})?$"
+        },
+        "placesMax": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "discipline": {
+          "type": "string"
+        },
+        "coach": {
+          "type": "string"
+        },
+        "placesRestantes": {
+          "type": "integer",
+          "minimum": 0
+        }
       }
     },
     "Avis": {
       "type": "object",
-      "required": ["note", "dateAvis", "auteur"],
+      "required": [
+        "note",
+        "dateAvis",
+        "auteur"
+      ],
       "properties": {
-        "note": { "type": "integer", "minimum": 1, "maximum": 5 },
-        "commentaire": { "type": ["string", "null"] },
-        "dateAvis": { "$ref": "#/$defs/DateHeure" },
-        "auteur": { "type": "string" }
+        "note": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "commentaire": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "dateAvis": {
+          "$ref": "#/$defs/DateHeure"
+        },
+        "auteur": {
+          "type": "string"
+        }
       }
     },
     "SalleResume": {
       "description": "Élément de la liste des salles (recherche).",
       "type": "object",
-      "required": ["id", "nom", "adresse", "ville", "codePostal", "nbAvis"],
+      "required": [
+        "id",
+        "nom",
+        "adresse",
+        "ville",
+        "codePostal",
+        "nbAvis"
+      ],
       "properties": {
-        "id": { "type": "integer", "minimum": 1 },
-        "nom": { "type": "string" },
-        "adresse": { "type": "string" },
-        "ville": { "type": "string" },
-        "codePostal": { "type": "string" },
-        "noteMoyenne": { "type": ["string", "null"] },
-        "nbAvis": { "type": "integer", "minimum": 0 },
-        "prixMin": { "type": ["string", "null"] },
-        "disciplines": { "type": ["string", "null"] }
+        "id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "nom": {
+          "type": "string"
+        },
+        "adresse": {
+          "type": "string"
+        },
+        "ville": {
+          "type": "string"
+        },
+        "codePostal": {
+          "type": "string"
+        },
+        "noteMoyenne": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "nbAvis": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "prixMin": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "disciplines": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
       }
     },
     "SalleFiche": {
       "description": "Fiche détaillée d'une salle : résumé, séances à venir et avis.",
       "allOf": [
-        { "$ref": "#/$defs/SalleResume" },
+        {
+          "$ref": "#/$defs/SalleResume"
+        },
         {
           "type": "object",
-          "required": ["seances", "avis"],
+          "required": [
+            "seances",
+            "avis"
+          ],
           "properties": {
-            "seances": { "type": "array", "items": { "$ref": "#/$defs/Seance" } },
-            "avis": { "type": "array", "items": { "$ref": "#/$defs/Avis" } }
+            "seances": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Seance"
+              }
+            },
+            "avis": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Avis"
+              }
+            }
           }
         }
       ]
@@ -141,16 +352,743 @@
     "FormSeance": {
       "description": "Corps de création ou de modification d'une séance par un coach.",
       "type": "object",
-      "required": ["titre", "idSalle", "idDiscipline", "typeSeance", "dateDebut", "dateFin", "prix", "placesMax"],
+      "required": [
+        "titre",
+        "idSalle",
+        "idDiscipline",
+        "typeSeance",
+        "dateDebut",
+        "dateFin",
+        "prix",
+        "placesMax"
+      ],
       "properties": {
-        "titre": { "type": "string", "minLength": 1 },
-        "idSalle": { "type": "integer", "minimum": 1 },
-        "idDiscipline": { "type": "integer", "minimum": 1 },
-        "typeSeance": { "enum": ["collective", "individuelle"] },
-        "dateDebut": { "$ref": "#/$defs/DateHeure" },
-        "dateFin": { "$ref": "#/$defs/DateHeure" },
-        "prix": { "type": "number", "minimum": 0 },
-        "placesMax": { "type": "integer", "minimum": 1 }
+        "titre": {
+          "type": "string",
+          "minLength": 1
+        },
+        "idSalle": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "idDiscipline": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "typeSeance": {
+          "enum": [
+            "collective",
+            "individuelle"
+          ]
+        },
+        "dateDebut": {
+          "$ref": "#/$defs/DateHeure"
+        },
+        "dateFin": {
+          "$ref": "#/$defs/DateHeure"
+        },
+        "prix": {
+          "type": "number",
+          "minimum": 0
+        },
+        "placesMax": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "Favori": {
+      "description": "Salle favorite d'un sportif (GET /api/favoris/salles).",
+      "type": "object",
+      "required": [
+        "id",
+        "nom",
+        "ville",
+        "dateAjout"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "nom": {
+          "type": "string"
+        },
+        "ville": {
+          "type": "string"
+        },
+        "dateAjout": {
+          "$ref": "#/$defs/DateHeure"
+        }
+      }
+    },
+    "Contact": {
+      "description": "Message du formulaire de contact (POST /api/contact), stocké en JSON et contrôlé par JSON_SCHEMA_VALID en base.",
+      "type": "object",
+      "required": [
+        "nom",
+        "email",
+        "message"
+      ],
+      "properties": {
+        "nom": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 80
+        },
+        "email": {
+          "type": "string",
+          "pattern": "^[^@ ]+@[^@ ]+\\.[^@ ]+$"
+        },
+        "message": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 1000
+        }
+      },
+      "additionalProperties": false
+    },
+    "AvisDemande": {
+      "description": "Corps de publication d'un avis (POST /api/avis) : une cible exactement, salle ou coach.",
+      "type": "object",
+      "required": [
+        "note"
+      ],
+      "properties": {
+        "idSalle": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "idCoach": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "note": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "commentaire": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        }
+      }
+    },
+    "MonAvis": {
+      "description": "Avis publié par le sportif connecté (GET /api/mes-avis).",
+      "type": "object",
+      "required": [
+        "id",
+        "cible",
+        "type",
+        "note",
+        "commentaire",
+        "dateAvis",
+        "visible"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "cible": {
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "salle",
+            "coach"
+          ]
+        },
+        "note": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "commentaire": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "dateAvis": {
+          "$ref": "#/$defs/DateHeure"
+        },
+        "visible": {
+          "type": [
+            "integer",
+            "boolean"
+          ]
+        }
+      }
+    },
+    "CoachResume": {
+      "description": "Coach dans la recherche publique (GET /api/coachs).",
+      "type": "object",
+      "required": [
+        "id",
+        "nom",
+        "tarif",
+        "disciplines",
+        "noteMoyenne",
+        "nbAvis"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "nom": {
+          "type": "string"
+        },
+        "tarif": {
+          "type": "string",
+          "pattern": "^\\d+(\\.\\d{1,2})?$"
+        },
+        "disciplines": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "noteMoyenne": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "nbAvis": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "SeanceCalendrier": {
+      "description": "Séance du calendrier public (GET /api/calendrier).",
+      "type": "object",
+      "required": [
+        "id",
+        "titre",
+        "dateDebut",
+        "dateFin",
+        "prix",
+        "discipline",
+        "idSalle",
+        "salle",
+        "ville",
+        "coach",
+        "placesRestantes"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "titre": {
+          "type": "string"
+        },
+        "dateDebut": {
+          "$ref": "#/$defs/DateHeure"
+        },
+        "dateFin": {
+          "$ref": "#/$defs/DateHeure"
+        },
+        "prix": {
+          "type": "string",
+          "pattern": "^\\d+(\\.\\d{1,2})?$"
+        },
+        "discipline": {
+          "type": "string"
+        },
+        "idSalle": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "salle": {
+          "type": "string"
+        },
+        "ville": {
+          "type": "string"
+        },
+        "coach": {
+          "type": "string"
+        },
+        "placesRestantes": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "SeanceCoach": {
+      "description": "Séance d'un coach (GET /api/coach/seances).",
+      "type": "object",
+      "required": [
+        "id",
+        "titre",
+        "typeSeance",
+        "dateDebut",
+        "dateFin",
+        "prix",
+        "placesMax",
+        "statut",
+        "idSalle",
+        "salle",
+        "idDiscipline",
+        "discipline",
+        "nbReservations"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "titre": {
+          "type": "string"
+        },
+        "typeSeance": {
+          "enum": [
+            "collective",
+            "individuelle"
+          ]
+        },
+        "dateDebut": {
+          "$ref": "#/$defs/DateHeure"
+        },
+        "dateFin": {
+          "$ref": "#/$defs/DateHeure"
+        },
+        "prix": {
+          "type": "string",
+          "pattern": "^\\d+(\\.\\d{1,2})?$"
+        },
+        "placesMax": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "statut": {
+          "enum": [
+            "ouverte",
+            "annulee",
+            "terminee"
+          ]
+        },
+        "idSalle": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "salle": {
+          "type": "string"
+        },
+        "idDiscipline": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "discipline": {
+          "type": "string"
+        },
+        "nbReservations": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "OptionsCoach": {
+      "description": "Listes de choix du formulaire de séance (GET /api/coach/options).",
+      "type": "object",
+      "required": [
+        "salles",
+        "disciplines"
+      ],
+      "properties": {
+        "salles": {
+          "type": "array",
+          "items": {
+            "description": "Salle proposée.",
+            "type": "object",
+            "required": [
+              "id",
+              "nom",
+              "ville"
+            ],
+            "properties": {
+              "id": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "nom": {
+                "type": "string"
+              },
+              "ville": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "disciplines": {
+          "type": "array",
+          "items": {
+            "description": "Discipline proposée.",
+            "type": "object",
+            "required": [
+              "id",
+              "libelle"
+            ],
+            "properties": {
+              "id": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "libelle": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "Disponibilite": {
+      "description": "Créneau de disponibilité d'un coach (GET/POST /api/coach/disponibilites ; le POST n'envoie que dateDebut et dateFin).",
+      "type": "object",
+      "required": [
+        "id",
+        "dateDebut",
+        "dateFin"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "dateDebut": {
+          "$ref": "#/$defs/DateHeure"
+        },
+        "dateFin": {
+          "$ref": "#/$defs/DateHeure"
+        }
+      }
+    },
+    "FormSalle": {
+      "description": "Corps de création ou de modification d'une salle par un gestionnaire. Le statut et le gestionnaire ne sont jamais fournis par le client.",
+      "type": "object",
+      "required": [
+        "nom",
+        "adresse",
+        "ville",
+        "codePostal"
+      ],
+      "properties": {
+        "nom": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "adresse": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 150
+        },
+        "ville": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "codePostal": {
+          "type": "string",
+          "pattern": "^\\d{4}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "SalleGestionnaire": {
+      "description": "Salle d'un gestionnaire (GET /api/gestionnaire/salles).",
+      "type": "object",
+      "required": [
+        "id",
+        "nom",
+        "adresse",
+        "ville",
+        "codePostal",
+        "statutValidation"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "nom": {
+          "type": "string"
+        },
+        "adresse": {
+          "type": "string"
+        },
+        "ville": {
+          "type": "string"
+        },
+        "codePostal": {
+          "type": "string"
+        },
+        "statutValidation": {
+          "enum": [
+            "en_attente",
+            "validee",
+            "refusee"
+          ]
+        }
+      }
+    },
+    "ReservationGestionnaire": {
+      "description": "Réservation reçue sur une salle (GET /api/gestionnaire/reservations).",
+      "type": "object",
+      "required": [
+        "salle",
+        "titre",
+        "dateDebut",
+        "sportif",
+        "statut",
+        "dateReservation"
+      ],
+      "properties": {
+        "salle": {
+          "type": "string"
+        },
+        "titre": {
+          "type": "string"
+        },
+        "dateDebut": {
+          "$ref": "#/$defs/DateHeure"
+        },
+        "sportif": {
+          "type": "string"
+        },
+        "statut": {
+          "enum": [
+            "confirmee",
+            "en_attente",
+            "annulee"
+          ]
+        },
+        "dateReservation": {
+          "$ref": "#/$defs/DateHeure"
+        }
+      }
+    },
+    "AvisGestionnaire": {
+      "description": "Avis reçu sur une salle (GET /api/gestionnaire/avis).",
+      "type": "object",
+      "required": [
+        "salle",
+        "note",
+        "commentaire",
+        "dateAvis",
+        "auteur"
+      ],
+      "properties": {
+        "salle": {
+          "type": "string"
+        },
+        "note": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "commentaire": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "dateAvis": {
+          "$ref": "#/$defs/DateHeure"
+        },
+        "auteur": {
+          "type": "string"
+        }
+      }
+    },
+    "UtilisateurAdmin": {
+      "description": "Utilisateur dans la liste d'administration (GET /api/admin/utilisateurs).",
+      "type": "object",
+      "required": [
+        "id",
+        "nom",
+        "prenom",
+        "email",
+        "role",
+        "emailConfirme"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "nom": {
+          "type": "string"
+        },
+        "prenom": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "role": {
+          "enum": [
+            "sportif",
+            "coach",
+            "gestionnaire",
+            "admin"
+          ]
+        },
+        "emailConfirme": {
+          "type": [
+            "integer",
+            "boolean"
+          ]
+        }
+      }
+    },
+    "SalleAdmin": {
+      "description": "Salle dans la liste d'administration (GET /api/admin/salles).",
+      "type": "object",
+      "required": [
+        "id",
+        "nom",
+        "adresse",
+        "ville",
+        "statutValidation",
+        "gestionnaire"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "nom": {
+          "type": "string"
+        },
+        "adresse": {
+          "type": "string"
+        },
+        "ville": {
+          "type": "string"
+        },
+        "statutValidation": {
+          "enum": [
+            "en_attente",
+            "validee",
+            "refusee"
+          ]
+        },
+        "gestionnaire": {
+          "type": "string"
+        }
+      }
+    },
+    "ValidationSalle": {
+      "description": "Corps de validation d'une salle (PATCH /api/admin/salles/{id}/validation).",
+      "type": "object",
+      "required": [
+        "statut"
+      ],
+      "properties": {
+        "statut": {
+          "enum": [
+            "validee",
+            "refusee"
+          ]
+        }
+      }
+    },
+    "AvisSignale": {
+      "description": "Avis signalé à modérer (GET /api/admin/avis-signales).",
+      "type": "object",
+      "required": [
+        "id",
+        "cible",
+        "note",
+        "commentaire",
+        "dateAvis",
+        "auteur"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "cible": {
+          "type": "string"
+        },
+        "note": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "commentaire": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "dateAvis": {
+          "$ref": "#/$defs/DateHeure"
+        },
+        "auteur": {
+          "type": "string"
+        }
+      }
+    },
+    "Discipline": {
+      "description": "Discipline avec son nombre de séances (GET /api/admin/disciplines).",
+      "type": "object",
+      "required": [
+        "id",
+        "libelle",
+        "nbSeances"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "libelle": {
+          "type": "string"
+        },
+        "nbSeances": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "FormDiscipline": {
+      "description": "Corps de création ou de renommage d'une discipline.",
+      "type": "object",
+      "required": [
+        "libelle"
+      ],
+      "properties": {
+        "libelle": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        }
+      }
+    },
+    "ModerationAvis": {
+      "description": "Décision de modération (PATCH /api/admin/avis/{id}/moderation).",
+      "type": "object",
+      "required": [
+        "decision"
+      ],
+      "properties": {
+        "decision": {
+          "enum": [
+            "masquer",
+            "conserver"
+          ]
+        }
       }
     }
   }
