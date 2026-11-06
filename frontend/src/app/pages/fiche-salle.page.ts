@@ -96,10 +96,10 @@ import { SalleFiche, Seance } from '../core/models';
               <option value="">Date</option>
               @for (j of jours(); track j.cle) { <option [value]="j.cle">{{ j.cle | date: 'EEE d MMM' }}</option> }
             </select>
-            <select aria-label="Créneau / séance" [value]="idChoisie()" [disabled]="!jour()" (change)="idChoisie.set(+$any($event.target).value)">
+            <select aria-label="Créneau / séance" [value]="idChoisie()" (change)="choisirCreneau(+$any($event.target).value)">
               <option value="0">Créneau / séance</option>
               @for (se of seancesDuJour(); track se.id) {
-                <option [value]="se.id">{{ se.dateDebut | date: 'HH:mm' }} · {{ se.titre }}</option>
+                <option [value]="se.id">{{ se.dateDebut | date: (jour() ? 'HH:mm' : 'EEE d MMM · HH:mm') }} · {{ se.titre }}</option>
               }
             </select>
             @if (choisie(); as c) { <p class="places">Places restantes : {{ c.placesRestantes }}</p> }
@@ -148,7 +148,10 @@ export class FicheSallePage {
     const cles = [...new Set((this.salle()?.seances ?? []).map((s) => s.dateDebut.slice(0, 10)))];
     return cles.map((cle) => ({ cle }));
   });
-  protected readonly seancesDuJour = computed(() => (this.salle()?.seances ?? []).filter((s) => s.dateDebut.slice(0, 10) === this.jour()));
+  protected readonly seancesDuJour = computed(() => {
+    const toutes = this.salle()?.seances ?? [];
+    return this.jour() ? toutes.filter((s) => s.dateDebut.slice(0, 10) === this.jour()) : toutes;
+  });
   protected readonly choisie = computed<Seance | null>(() => this.seancesDuJour().find((s) => s.id === this.idChoisie()) ?? null);
 
   constructor() {
@@ -170,6 +173,11 @@ export class FicheSallePage {
   }
 
   protected choisirJour(cle: string): void { this.jour.set(cle); this.idChoisie.set(0); }
+  protected choisirCreneau(id: number): void {
+    this.idChoisie.set(id);
+    const se = (this.salle()?.seances ?? []).find((x) => x.id === id);
+    if (se) this.jour.set(se.dateDebut.slice(0, 10));
+  }
 
   private charger(id: number): void {
     this.api.salle(id).subscribe({

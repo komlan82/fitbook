@@ -6259,6 +6259,484 @@
      ]
     }
    ]
+  },
+  {
+   "name": "12 - Recherche publique (coachs, séances)",
+   "item": [
+    {
+     "name": "Public : liste des coachs",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/coachs",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "coachs"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         "pm.test('Coachs bien formés, sans donnée sensible', () => { const l=pm.response.json(); pm.expect(l).to.be.an('array').that.is.not.empty; l.forEach(c => { pm.expect(c).to.have.all.keys('id','nom','tarif','disciplines','noteMoyenne','nbAvis'); pm.expect(c.nom).to.match(/^\\S+ .\\.$/); }); });"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Public : calendrier pour la recherche (60 jours)",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/calendrier?debut=2026-11-05&fin=2027-01-04",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "calendrier?debut=2026-11-05&fin=2027-01-04"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         "pm.test('Liste de séances', () => pm.expect(pm.response.json()).to.be.an('array'));"
+        ]
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "13 - Suppression d'utilisateurs (admin)",
+   "item": [
+    {
+     "name": "Connexion admin@fitbook.test -> 200",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/login",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "login"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"email\": \"admin@fitbook.test\", \"password\": \"Fitbook2026!\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         ""
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Admin : repérer son propre id et celui de Léa",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/admin/utilisateurs",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "admin",
+        "utilisateurs"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         "const l = pm.response.json(); const lea = l.find(u => u.email === 'lea@fitbook.test'); const adm = l.find(u => u.email === 'admin@fitbook.test'); pm.test('Comptes repérés', () => { pm.expect(lea).to.be.an('object'); pm.expect(adm).to.be.an('object'); }); pm.collectionVariables.set('idLea', lea.id); pm.collectionVariables.set('idAdmin', adm.id);"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Admin : utilisateur inexistant -> 404",
+     "request": {
+      "method": "DELETE",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/admin/utilisateurs/999999",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "admin",
+        "utilisateurs",
+        "999999"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 404', () => pm.response.to.have.status(404));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Admin : ne peut pas se supprimer lui-même",
+     "request": {
+      "method": "DELETE",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/admin/utilisateurs/{{idAdmin}}",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "admin",
+        "utilisateurs",
+        "{{idAdmin}}"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 403', () => pm.response.to.have.status(403));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Admin : Léa (réservations liées) non supprimable",
+     "request": {
+      "method": "DELETE",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/admin/utilisateurs/{{idLea}}",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "admin",
+        "utilisateurs",
+        "{{idLea}}"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 409', () => pm.response.to.have.status(409));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Déconnexion",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/logout",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "logout"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Connexion lea@fitbook.test -> 200",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/login",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "login"
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\"email\": \"lea@fitbook.test\", \"password\": \"Fitbook2026!\"}"
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+         ""
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Sportif : suppression d'utilisateur interdite",
+     "request": {
+      "method": "DELETE",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/admin/utilisateurs/1",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "admin",
+        "utilisateurs",
+        "1"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 403', () => pm.response.to.have.status(403));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Déconnexion",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/logout",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "logout"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 200', () => pm.response.to.have.status(200));"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "Anonyme : suppression d'utilisateur -> 401",
+     "request": {
+      "method": "DELETE",
+      "header": [
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       },
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{baseUrl}}/api/admin/utilisateurs/1",
+       "host": [
+        "{{baseUrl}}"
+       ],
+       "path": [
+        "api",
+        "admin",
+        "utilisateurs",
+        "1"
+       ]
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "pm.test('Statut 401', () => pm.response.to.have.status(401));"
+        ]
+       }
+      }
+     ]
+    }
+   ]
   }
  ],
  "variable": [
@@ -6304,6 +6782,30 @@
   },
   {
    "key": "idDisciplineTest",
+   "value": ""
+  },
+  {
+   "key": "libelleDiscipline",
+   "value": ""
+  },
+  {
+   "key": "idDisciplineTest",
+   "value": ""
+  },
+  {
+   "key": "libelleDiscipline",
+   "value": ""
+  },
+  {
+   "key": "idDisciplineTest",
+   "value": ""
+  },
+  {
+   "key": "idAdmin",
+   "value": ""
+  },
+  {
+   "key": "idLea",
    "value": ""
   }
  ]

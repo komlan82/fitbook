@@ -45,3 +45,4 @@ export interface FormSeance {
 export interface OptionsCoach { salles: { id: number; nom: string; ville: string }[]; disciplines: { id: number; libelle: string }[]; }
 export interface Disponibilite { id: number; dateDebut: string; dateFin: string; }
 export interface MonAvis { id: number; cible: string; type: 'salle' | 'coach'; note: number; commentaire: string | null; dateAvis: string; visible: number | boolean; }
+export interface CoachResume { id: number; nom: string; tarif: string; disciplines: string | null; noteMoyenne: string | null; nbAvis: number; }

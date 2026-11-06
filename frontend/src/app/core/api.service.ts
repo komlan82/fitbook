@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { map } from 'rxjs';
 import {
   Avis, AvisGestionnaire, Disponibilite, Favori, FormSalle, FormSeance, OptionsCoach, Reservation, ReponseApi, SalleFiche, SalleGestionnaire,
-  AvisSignale, Discipline, MonAvis, Utilisateur, ReservationGestionnaire, SalleAdmin, SalleResume, SauvegardeJournal, Seance, SeanceCalendrier, SeanceCoach, UtilisateurAdmin,
+  AvisSignale, CoachResume, Discipline, MonAvis, Utilisateur, ReservationGestionnaire, SalleAdmin, SalleResume, SauvegardeJournal, Seance, SeanceCalendrier, SeanceCoach, UtilisateurAdmin,
 } from './models';
 
 /** "2026-11-07 10:00:00" (MySQL) -> "2026-11-07T10:00:00" (lisible par le DatePipe). */
@@ -76,6 +76,7 @@ export class ApiService {
       map((j) => ({ ...j, sauvegardes: j.sauvegardes.map((s) => ({ ...s, date: iso(s.date) })) })),
     );
   }
+  supprimerUtilisateur(id: number) { return this.http.delete<ReponseApi>(`/api/admin/utilisateurs/${id}`); }
   adminUtilisateurs() { return this.http.get<UtilisateurAdmin[]>('/api/admin/utilisateurs'); }
   signalerAvis(id: number) { return this.http.post<ReponseApi>(`/api/avis/${id}/signalement`, {}); }
   adminAvisSignales() { return this.http.get<AvisSignale[]>('/api/admin/avis-signales'); }
@@ -104,6 +105,8 @@ export class ApiService {
       map((l) => l.map((a) => ({ ...a, dateAvis: iso(a.dateAvis) }))),
     );
   }
+
+  coachsPublics() { return this.http.get<CoachResume[]>('/api/coachs'); }
 
   /** Calendrier public : séances ouvertes entre deux dates (début inclus, fin exclue, AAAA-MM-JJ). */
   calendrier(debut: string, fin: string) {
